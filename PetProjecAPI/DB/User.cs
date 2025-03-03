@@ -1,7 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace PetProjecAPI.DB
+﻿namespace PetProjecAPI.DB
 {
     public class User
     {
