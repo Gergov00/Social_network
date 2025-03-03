@@ -1,0 +1,56 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace PetProjecAPI.DB
+{
+    public class AppDbContext : DbContext
+    {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+           : base(options)
+        {
+        }
+
+        // DbSet для каждой сущности (таблицы)
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserPhoto> UserPhotos { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<PostLike> PostLikes { get; set; }
+        public DbSet<CommentLike> CommentLikes { get; set; }
+
+        // Конфигурация моделей и связей между таблицами
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Пользователь может иметь несколько постов
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Posts)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId);
+
+            // Пользователь может иметь несколько фотографий
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.UserPhotos)
+                .WithOne(up => up.User)
+                .HasForeignKey(up => up.UserId);
+
+            // Пост может иметь несколько комментариев
+            modelBuilder.Entity<Post>()
+                .HasMany(p => p.Comments)
+                .WithOne(c => c.Post)
+                .HasForeignKey(c => c.PostId);
+
+            // Пост может иметь несколько лайков
+            modelBuilder.Entity<Post>()
+                .HasMany(p => p.PostLikes)
+                .WithOne(pl => pl.Post)
+                .HasForeignKey(pl => pl.PostId);
+
+            // Комментарий может иметь несколько лайков
+            modelBuilder.Entity<Comment>()
+                .HasMany(c => c.CommentLikes)
+                .WithOne(cl => cl.Comment)
+                .HasForeignKey(cl => cl.CommentId);
+        }
+    }
+}
