@@ -1,0 +1,6 @@
+@PetProjecAPI_HostAddress = http://localhost:5199
+
+GET {{PetProjecAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
