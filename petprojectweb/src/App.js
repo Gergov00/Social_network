@@ -10,7 +10,7 @@ function App() {
             <Routes>
                 <Route path="/auth" element={<AuthPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
-                {/* Перенаправляем корень на страницу авторизации */}
+                {/*  СЂРє                                             */}
                 <Route path="/" element={<Navigate to="/auth" />} />
             </Routes>
         </BrowserRouter>
