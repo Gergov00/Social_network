@@ -1,0 +1,173 @@
+/* Общие стили */
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+body {
+    background: #c1bdba;
+    font-family: 'Titillium Web', sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: #1ab188;
+    transition: 0.5s ease;
+}
+
+    a:hover {
+        color: #179b77;
+    }
+
+/* Контейнер формы */
+.form {
+    background: rgba(36,51,60, 1);
+    padding: 40px;
+    max-width: 600px;
+    margin: 40px auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px 4px rgba(19, 35, 47, 0.3);
+}
+
+/* Вкладки (Sign Up / Log In) */
+.tab-group {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 40px 0;
+    display: flex;
+}
+
+    .tab-group li {
+        flex: 1;
+    }
+
+        .tab-group li a {
+            display: block;
+            text-decoration: none;
+            padding: 15px;
+            background: rgba(160, 179, 176, 0.25);
+            color: #a0b3b0;
+            font-size: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.5s ease;
+        }
+
+            .tab-group li a:hover {
+                background: #179b77;
+                color: #ffffff;
+            }
+
+    .tab-group .active a {
+        background: #1ab188;
+        color: #ffffff;
+    }
+
+/* Контент табов */
+.tab-content > div {
+    display: none; /* jQuery будет показывать нужный блок */
+}
+
+    .tab-content > div:first-child {
+        display: block; /* Для случая, если jQuery-скрипт ещё не сработал */
+    }
+
+h1 {
+    text-align: center;
+    color: #ffffff;
+    font-weight: 300;
+    margin-bottom: 40px;
+}
+
+/* Поля ввода */
+.field-wrap {
+    position: relative; /* важно для абсолютного позиционирования label */
+    margin-bottom: 40px;
+}
+
+.top-row {
+    display: flex;
+    gap: 10px;
+}
+
+    .top-row .field-wrap {
+        flex: 1;
+    }
+
+/* Метки */
+label {
+    position: absolute;
+    top: 14px;
+    left: 13px;
+    color: rgba(255, 255, 255, 0.5);
+    transition: all 0.25s ease;
+    pointer-events: none;
+    font-size: 18px;
+}
+
+    label .req {
+        margin-left: 5px;
+        color: #1ab188;
+    }
+
+/* Поля ввода */
+.field-wrap input,
+.field-wrap textarea {
+    font-size: 18px;
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background: none;
+    border: 1px solid #a0b3b0;
+    color: #ffffff;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+    .field-wrap input:focus,
+    .field-wrap textarea:focus {
+        outline: 0;
+        border-color: #1ab188;
+    }
+
+/* Кнопки */
+.button {
+    border: 0;
+    outline: none;
+    padding: 15px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: #1ab188;
+    color: #ffffff;
+    transition: all 0.5s ease;
+    cursor: pointer;
+}
+
+    .button:hover,
+    .button:focus {
+        background: #179b77;
+    }
+
+.button-block {
+    display: block;
+    width: 100%;
+}
+
+/* Анимация/стили для активной метки */
+label.active {
+    background: rgba(36,51,60, 1);
+    top: -10px; /* поднимаем метку выше */
+    left: 13px; /* можно оставить как есть или скорректировать */
+    font-size: 14px; /* уменьшаем размер шрифта */
+    color: #ffffff; /* меняем цвет метки при активном поле */
+    
+}
+
+    label.active .req {
+        opacity: 0; /* скрываем звёздочку при подъёме, если нужно */
+    }
+
+/* Подсветка при фокусе (опционально) */
+label.highlight {
+    color: #ffffff; /* метка становится ярче при фокусе */
+}
