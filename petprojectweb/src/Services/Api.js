@@ -1,8 +1,7 @@
 // src/services/api.js
 
-const API_BASE_URL = 'http://www.gergovzaurbek.online/api'; // Замените на адрес вашего API
+const API_BASE_URL = 'http://www.gergovzaurbek.online/api';
 
-// Функция для входа
 export async function login(email, password) {
     const response = await fetch(`${API_BASE_URL}/Auth/login`, {
         method: 'POST',
@@ -11,12 +10,11 @@ export async function login(email, password) {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Ошибка авторизации');
+        throw new Error(errorData.message || 'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ');
     }
     return await response.json();
 }
 
-// Функция для регистрации
 export async function register(firstName, lastName, email, password) {
     const response = await fetch(`${API_BASE_URL}/Auth/register`, {
         method: 'POST',
@@ -25,7 +23,32 @@ export async function register(firstName, lastName, email, password) {
     });
     if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Ошибка регистрации');
+        throw new Error(errorData.message || 'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ');
+    }
+    return await response.json();
+}
+
+
+export async function updateProfile(userId, firstName, lastName, avatarFile) {
+    // Р¤РѕСЂРјРёСЂСѓРµРј РѕР±СЉРµРєС‚ FormData Рё РґРѕР±Р°РІР»СЏРµРј РЅРµРѕР±С…РѕРґРёРјС‹Рµ РїРѕР»СЏ
+    const formData = new FormData();
+    formData.append("userId", userId);
+    formData.append("firstName", firstName);
+    formData.append("lastName", lastName);
+    if (avatarFile) {
+        formData.append("avatar", avatarFile);
+    }
+
+    // РћС‚РїСЂР°РІР»СЏРµРј PUT-Р·Р°РїСЂРѕСЃ РЅР° endpoint UpdateProfile
+    const response = await fetch(`${API_BASE_URL}/Users/UpdateProfile`, {
+        method: 'PUT',
+        // Р—Р°РіРѕР»РѕРІРѕРє Content-Type РЅРµ СѓРєР°Р·С‹РІР°РµРј, С‚.Рє. РѕРЅ РІС‹СЃС‚Р°РІРёС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РґР»СЏ FormData
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'РћС€РёР±РєР° РѕР±РЅРѕРІР»РµРЅРёСЏ РїСЂРѕС„РёР»СЏ');
     }
     return await response.json();
 }

@@ -43,7 +43,7 @@ namespace PetProjecAPI.Controllers
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Email = model.Email,
-                AvatarURL = "" // Можно задать значение по умолчанию
+                AvatarURL = "http://www.gergovzaurbek.online/images/default-avatar.png" // Можно задать значение по умолчанию
             };
 
             // Хэшируем пароль
@@ -89,7 +89,18 @@ namespace PetProjecAPI.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-            return Ok(new { Token = tokenString });
+            return Ok(new
+            {
+                Token = tokenString,
+                User = new
+                {
+                    user.Id,
+                    user.FirstName,
+                    user.LastName,
+                    user.Email,
+                    user.AvatarURL
+                }
+            });
         }
     }
 }

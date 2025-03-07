@@ -9,10 +9,12 @@ namespace PetProjecAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
 
-        public UsersController(AppDbContext context)
+        public UsersController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
         }
 
         // GET: api/Users
@@ -40,6 +42,77 @@ namespace PetProjecAPI.Controllers
             // Возвращаем код 201 Created с информацией о созданном пользователе
             return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
         }
+
+
+        [HttpPut("UpdateProfile")]
+        public async Task<IActionResult> UpdateProfile(
+    [FromForm] int userId,
+    [FromForm] string firstName,
+    [FromForm] string lastName,
+    [FromForm] IFormFile? avatar)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return NotFound("Пользователь не найден.");
+
+            // Обновляем имя и фамилию
+            user.FirstName = firstName;
+            user.LastName = lastName;
+
+            // Если передана аватарка, обновляем и её
+            if (avatar != null && avatar.Length > 0)
+            {
+                // Константа, указывающая URL стандартной аватарки
+                const string defaultAvatarUrl = "http://www.gergovzaurbek.online/images/default-avatar.png";
+
+                // Удаляем старый файл, если он есть и не является стандартным
+                if (!string.IsNullOrEmpty(user.AvatarURL) && !user.AvatarURL.Equals(defaultAvatarUrl, StringComparison.OrdinalIgnoreCase))
+                {
+                    try
+                    {
+                        // Извлекаем имя файла из полного URL
+                        var oldFileName = Path.GetFileName(new Uri(user.AvatarURL).AbsolutePath);
+                        var oldFilePath = Path.Combine(_env.WebRootPath, "images", oldFileName);
+
+                        if (System.IO.File.Exists(oldFilePath))
+                        {
+                            System.IO.File.Delete(oldFilePath);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Логируем ошибку, но не прерываем выполнение
+                        Console.WriteLine($"Ошибка при удалении старого файла: {ex.Message}");
+                    }
+                }
+
+                // Генерируем уникальное имя для нового файла
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(avatar.FileName);
+                var imagesFolder = Path.Combine(_env.WebRootPath, "images");
+                if (!Directory.Exists(imagesFolder))
+                {
+                    Directory.CreateDirectory(imagesFolder);
+                }
+                var savePath = Path.Combine(imagesFolder, fileName);
+
+                // Сохраняем новый файл на диск
+                using (var stream = new FileStream(savePath, FileMode.Create))
+                {
+                    await avatar.CopyToAsync(stream);
+                }
+
+                // Формируем URL для доступа к новому файлу
+                var fileUrl = $"{Request.Scheme}://{Request.Host}/images/{fileName}";
+                user.AvatarURL = fileUrl;
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return Ok(user);
+        }
+
+
 
         // PUT: api/Users/5
         [HttpPut("{id}")]

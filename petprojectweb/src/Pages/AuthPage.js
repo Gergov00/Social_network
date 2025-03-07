@@ -3,19 +3,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from '../Services/Api';
 import '../Assets/AuthPage.css';
-import $ from 'jquery'; // Импортируем jQuery
+import $ from 'jquery'; 
 
 const AuthPage = () => {
-    const [activeTab, setActiveTab] = useState('signup');
+    const [activeTab, setActiveTab] = useState('login');
 
-    // Состояния для регистрации
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [signupEmail, setSignupEmail] = useState('');
     const [signupPassword, setSignupPassword] = useState('');
     const [signupError, setSignupError] = useState(null);
 
-    // Состояния для логина
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPassword, setLoginPassword] = useState('');
     const [loginError, setLoginError] = useState(null);
@@ -24,14 +22,12 @@ const AuthPage = () => {
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
-        // Сброс ошибок при переключении вкладок
         setSignupError(null);
         setLoginError(null);
         setFirstName('');
         setLastName('');
         setSignupEmail('');
         setSignupPassword('');
-        // Сброс значений для формы логина
         setLoginEmail('');
         setLoginPassword('');
     };
@@ -41,20 +37,26 @@ const AuthPage = () => {
         setSignupError(null);
         try {
             const data = await register(firstName, lastName, signupEmail, signupPassword);
-            console.log("Регистрация успешна:", data);
-            navigate('/profile');
+            navigate('/auth');
         } catch (err) {
             console.error(err);
             setSignupError(err.message);
         }
     };
 
+    // РџСЂРёРјРµСЂ handleLoginSubmit:
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setLoginError(null);
+
         try {
+            // РџСЂРµРґРїРѕР»РѕР¶РёРј, API РІРѕР·РІСЂР°С‰Р°РµС‚ { token: "...", user: {...} }
             const data = await login(loginEmail, loginPassword);
-            console.log("Вход успешен:", data);
+
+            // Р’Р°Р¶РЅРѕ: РЎРѕС…СЂР°РЅСЏРµРј user РёРјРµРЅРЅРѕ РєР°Рє JSON-СЃС‚СЂРѕРєСѓ
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
             navigate('/profile');
         } catch (err) {
             console.error(err);
@@ -62,7 +64,7 @@ const AuthPage = () => {
         }
     };
 
-    // Интеграция jQuery-скрипта для обработки событий формы и табов
+
     useEffect(() => {
         $('.form').on('keyup blur focus', 'input, textarea', function (e) {
             var $this = $(this),
@@ -91,7 +93,7 @@ const AuthPage = () => {
 
 
 
-        // Обработка кликов по вкладкам
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         $('.tab a').on('click', function (e) {
             e.preventDefault();
             $(this).parent().addClass('active');
@@ -102,7 +104,7 @@ const AuthPage = () => {
             $(target).fadeIn(600);
         });
 
-        // Очистка обработчиков при размонтировании компонента
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         return () => {
             $('.form').find('input, textarea').off('keyup blur focus');
             $('.tab a').off('click');

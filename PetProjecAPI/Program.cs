@@ -3,11 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Добавление строки подключения (предполагается, что она определена в appsettings.json)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Добавляем CORS и настраиваем политику. Замените URL на адрес вашего клиента.
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClientOrigin", policy =>
@@ -18,7 +16,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -30,8 +27,9 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
-// Применяем политику CORS до авторизации
 app.UseCors("AllowClientOrigin");
+
+app.UseStaticFiles();
 
 app.UseAuthorization();
 
