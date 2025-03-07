@@ -1,29 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../Assets/ProfilePage.css';
 
 const ProfilePage = () => {
-    // Пример данных. В реальном приложении данные будут приходить из API.
-    const user = {
-        firstName: 'Иван',
-        lastName: 'Иванов',
-        status: 'Живу, чтобы создавать крутые проекты!',
-        avatar: 'https://sun9-67.userapi.com/impg/122ZC_KLtNt1KTg6Olk2jYgr1WQdH62zwxwJdw/ZMcWC_je8NE.jpg?size=1080x1080&quality=95&sign=78551ad027007c75c109d7a88ee5424e&type=album', // замените на реальный URL аватара
-        cover: 'https://via.placeholder.com/1200x300', // замените на реальный URL обложки
-        about: 'Я люблю программирование, путешествия и спорт. Здесь можно разместить краткую информацию о себе.',
-    };
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Функция безопасного парсинга JSON
+    function safeParse(jsonString) {
+        try {
+            return JSON.parse(jsonString);
+        } catch (error) {
+            console.error("Ошибка парсинга JSON:", error);
+            return null;
+        }
+    }
+
+    const [user, setUser] = useState(() => {
+        const savedUser = localStorage.getItem("user");
+        return savedUser ? safeParse(savedUser) : null;
+    });
+
+    useEffect(() => {
+        if (!user) {
+            console.log("Нет сохраненных данных пользователя");
+            navigate('/auth');
+        }
+    }, [user, navigate]);
+
+    if (!user) {
+        return <p>Пользователь не авторизован. Пожалуйста, выполните вход.</p>;
+    }
 
     return (
         <div className="profile-container">
             <div className="profile-cover">
-                <img src={user.cover} alt="Cover" className="cover-photo" />
+                <img
+                    src={user.cover || 'https://sun9-33.userapi.com/impf/Ce-dT6lYDP47lpGzYqYOc0gq6ymBwiQrs9mXQw/UY7k4fz4OA0.jpg?size=1080x540&quality=96&crop=0,282,1080,540&sign=946773e0bd7b110559a5be6d138955ae&c_uniq_tag=C8OiUIWg_d6fe85Csb3efUS3CWNvKXmzv5ZsLqQ9ghM&type=helpers&quot'}
+                    alt="Cover"
+                    className="cover-photo"
+                />
             </div>
             <div className="profile-info">
                 <div className="avatar">
-                    <img src={user.avatar} alt="Avatar" />
+                    <img
+                        src={user.avatarURL}
+                        alt="Avatar"
+                    />
                 </div>
                 <div className="user-details">
                     <h1>{user.firstName} {user.lastName}</h1>
-                    <p className="status">{user.status}</p>
+                    <p className="status">{user.status || 'Статус не указан'}</p>
+                    {/* Кнопка для перехода на страницу редактирования профиля */}
+                    <button onClick={() => navigate('/edit-profile')}>
+                        Редактировать профиль
+                    </button>
                 </div>
             </div>
             <div className="profile-content">
@@ -38,7 +69,7 @@ const ProfilePage = () => {
                 </div>
                 <div className="main-content">
                     <h2>О себе</h2>
-                    <p>{user.about}</p>
+                    <p>{user.about || 'Информация отсутствует'}</p>
                 </div>
             </div>
         </div>
