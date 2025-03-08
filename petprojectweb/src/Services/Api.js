@@ -110,3 +110,31 @@ export async function createPost(post, file) {
     return await response.json();
 }
 
+export async function getPostsByUser(userId) {
+    const response = await fetch(`${API_BASE_URL}/Posts/user/${userId}`);
+    if (!response.ok) {
+        throw new Error('Ошибка заргузки постов');
+    }
+    return await response.json();
+}
+
+export async function deletePost(postId) {
+    const response = await fetch(`${API_BASE_URL}/Posts/delete/${postId}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка удаления поста');
+    }
+    return true;
+}
+
+export async function deletePhoto(photoId) {
+    const response = await fetch(`${API_BASE_URL}/UserPhotos/${photoId}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        throw new Error(response.json().message || 'Ошибка удаление');
+    }
+    return true;
+}

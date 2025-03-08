@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { act, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Assets/ProfilePage.css';
-import { getUserPhotos, uploadUserPhoto } from '../Services/Api';
+import { getUserPhotos, uploadUserPhoto, getPostsByUser, deletePhoto} from '../Services/Api';
+import PostsComponent from '../Components/PostsComponent';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -33,6 +34,10 @@ const ProfilePage = () => {
     const [uploadLoading, setUploadLoading] = useState(false);
     const [uploadError, setUploadError] = useState(null);
 
+    const [postsLoading, setPostsLoding] = useState(null);
+    const [posts, setPosts] = useState([])
+    const [postsError, setPostsError] = useState(null);
+
     useEffect(() => {
         if (!user) {
             console.log("Нет сохраненных данных пользователя");
@@ -56,6 +61,22 @@ const ProfilePage = () => {
         }
     }, [activeTab, user]);
 
+    useEffect(() => {
+        if (activeTab === 'posts' && user) {
+            setPostsLoding(true);
+            getPostsByUser(user.id)
+                .then(data => {
+                    console.log(data);
+                    setPosts(data);
+                    setPostsLoding(false);
+                })
+                .catch(err => {
+                    setPostsError(err);
+                    setPostsLoding(false);
+                })
+        }
+    }, [activeTab, user]);
+
     const handleLogout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
@@ -76,8 +97,14 @@ const ProfilePage = () => {
         setUploadError(null);
         try {
             const newPhoto = await uploadUserPhoto(user.id, uploadPhotoFile);
+            // Приводим объект к нужной структуре, если требуется:
+            const formattedPhoto = {
+                id: newPhoto.id,
+                url: newPhoto.photoURL, // или другое имя поля, соответствующее тому, что ожидается
+                createdAt: newPhoto.createdAt,
+            };
             // Добавляем новую фотографию в начало списка
-            setPhotos(prevPhotos => [newPhoto, ...prevPhotos]);
+            setPhotos(prevPhotos => [formattedPhoto, ...prevPhotos]);
             setUploadPhotoFile(null);
         } catch (error) {
             setUploadError(error.message);
@@ -86,9 +113,20 @@ const ProfilePage = () => {
         }
     };
 
+
     if (!user) {
         return <p>Пользователь не авторизован. Пожалуйста, выполните вход.</p>;
     }
+
+    const handlePhotoDelete = async (photo) => {
+        try {
+            await deletePhoto(photo.id);
+            setPhotos(prevPhotos => prevPhotos.filter(p => p.id !== photo.id));
+        } catch (error) {
+            console.error("Ошибка удаления фотографии:", error);
+        }
+    };
+
 
     // Функция для отображения контента в зависимости от выбранной вкладки
     const renderContent = () => {
@@ -129,30 +167,25 @@ const ProfilePage = () => {
                         {photosError && <p>Ошибка загрузки: {photosError.message}</p>}
                         <div className="photos-gallery">
                             {photos.map((photo) => (
-                                <img
+                                <><img
                                     key={photo.id}
                                     src={photo.url}
                                     alt={photo.description || 'Фотография'}
                                     className="photo-item"
                                 />
+                                    <button onClick={() => handlePhotoDelete(photo) }>Удалить</button>
+                                </>
                             ))}
                         </div>
                     </>
                 );
-            case 'videos':
+            case 'posts':
                 return (
                     <>
-                        <h2>Видео</h2>
-                        <p>Видео отсутствуют.</p>
+                        <PostsComponent userId={user.id}/>
                     </>
                 );
-            case 'messages':
-                return (
-                    <>
-                        <h2>Сообщения</h2>
-                        <p>Сообщения отсутствуют.</p>
-                    </>
-                );
+
             default:
                 return null;
         }
@@ -209,17 +242,12 @@ const ProfilePage = () => {
                             Фотографии
                         </li>
                         <li
-                            onClick={() => setActiveTab('videos')}
-                            className={activeTab === 'videos' ? 'active' : ''}
+                            onClick={() => setActiveTab('posts')}
+                            className={activeTab === 'posts' ? 'active' : ''}
                         >
-                            Видео
+                            Посты
                         </li>
-                        <li
-                            onClick={() => setActiveTab('messages')}
-                            className={activeTab === 'messages' ? 'active' : ''}
-                        >
-                            Сообщения
-                        </li>
+
                     </ul>
                 </div>
                 <div className="main-content">

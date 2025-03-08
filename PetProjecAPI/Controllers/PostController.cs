@@ -30,6 +30,15 @@ namespace PetProjecAPI.Controllers
             return await _context.Posts.ToListAsync();
         }
 
+        [HttpGet("user/{userId}")]
+        public async Task<ActionResult<IEnumerable<Post>>> GetPostsByUserId(int userId)
+        {
+            return await _context.Posts
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+        }
+
+
         // GET: api/Posts/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
@@ -85,7 +94,7 @@ namespace PetProjecAPI.Controllers
         }
 
         // DELETE: api/Posts/5
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeletePost(int id)
         {
             var post = await _context.Posts.FindAsync(id);

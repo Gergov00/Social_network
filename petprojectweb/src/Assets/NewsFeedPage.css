@@ -7,48 +7,7 @@
 }
 
 /* Шапка (мини-бар) */
-.mini-bar {
-    display: flex;
-    align-items: center;
-    background-color: #4267B2; /* Цвет, похожий на VK / Facebook */
-    color: white;
-    padding: 10px 20px;
-}
 
-    .mini-bar .logo h2 {
-        margin: 0;
-    }
-
-    .mini-bar .menu ul {
-        list-style: none;
-        display: flex;
-        margin: 0 20px;
-        padding: 0;
-    }
-
-    .mini-bar .menu li {
-        margin: 0 10px;
-        cursor: pointer;
-        padding: 8px 16px;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-    }
-
-        .mini-bar .menu li.active,
-        .mini-bar .menu li:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-    .mini-bar .search-bar {
-        margin-left: auto;
-    }
-
-        .mini-bar .search-bar input {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            outline: none;
-        }
 
 /* Контент (лента) */
 .content {
