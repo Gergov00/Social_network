@@ -1,4 +1,3 @@
-// src/Pages/AuthPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from '../Services/Api';
@@ -36,24 +35,25 @@ const AuthPage = () => {
         e.preventDefault();
         setSignupError(null);
         try {
-            const data = await register(firstName, lastName, signupEmail, signupPassword);
-            navigate('/auth');
+            await register(firstName, lastName, signupEmail, signupPassword);
+            const data = await login(signupEmail, signupPassword);
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+
+            navigate('/profile');
         } catch (err) {
             console.error(err);
             setSignupError(err.message);
         }
     };
 
-    // Пример handleLoginSubmit:
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setLoginError(null);
 
         try {
-            // Предположим, API возвращает { token: "...", user: {...} }
             const data = await login(loginEmail, loginPassword);
 
-            // Важно: Сохраняем user именно как JSON-строку
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
 
@@ -93,7 +93,6 @@ const AuthPage = () => {
 
 
 
-        // ��������� ������ �� ��������
         $('.tab a').on('click', function (e) {
             e.preventDefault();
             $(this).parent().addClass('active');
@@ -104,7 +103,6 @@ const AuthPage = () => {
             $(target).fadeIn(600);
         });
 
-        // ������� ������������ ��� ��������������� ����������
         return () => {
             $('.form').find('input, textarea').off('keyup blur focus');
             $('.tab a').off('click');
@@ -204,7 +202,6 @@ const AuthPage = () => {
                                     onChange={(e) => setLoginPassword(e.target.value)}
                                 />
                             </div>
-                            <p className="forgot"><a href="#">Forgot Password?</a></p>
                             <button type="submit" className="button button-block">Log In</button>
                         </form>
                     </div>
