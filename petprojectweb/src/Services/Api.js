@@ -89,13 +89,19 @@ export async function getPosts() {
     return await response.json();
 }
 
-export async function createPost(post) {
-    const response = await fetch(`${API_BASE_URL}/Posts`, {
+
+export async function createPost(post, file) {
+    const formData = new FormData();
+    formData.append("userId", post.userId);
+    formData.append("content", post.content);
+    formData.append("createdAt", post.createdAt);
+    if (file) {
+        formData.append("file", file);
+    }
+
+    const response = await fetch(`${API_BASE_URL}/Posts/create`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(post),
+        body: formData,
     });
     if (!response.ok) {
         const errorData = await response.json();
@@ -103,3 +109,4 @@ export async function createPost(post) {
     }
     return await response.json();
 }
+

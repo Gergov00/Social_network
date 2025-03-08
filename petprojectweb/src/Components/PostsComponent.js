@@ -39,20 +39,14 @@ const NewPostForm = ({ onPostCreated }) => {
         setLoading(true);
         setError(null);
         try {
-            let photoUrl = '';
-            if (photo) {
-                const currentUser = JSON.parse(localStorage.getItem("user"));
-                //const uploadedPhoto = await uploadUserPhoto(currentUser.id, photo);
-                //photoUrl = uploadedPhoto.photoURL; 
-            }
             const currentUser = JSON.parse(localStorage.getItem("user"));
             const newPostData = {
                 userId: currentUser.id,
                 content,
-                photoUrl,
                 createdAt: new Date().toISOString(),
             };
-            const newPost = await createPost(newPostData);
+            console.log(newPostData);
+            const newPost = await createPost(newPostData, photo);
             onPostCreated(newPost);
             setContent('');
             setPhoto(null);

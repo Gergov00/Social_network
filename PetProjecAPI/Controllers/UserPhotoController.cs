@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetProjecAPI.DB;
+using PetProjecAPI.Services;
 
 namespace PetProjecAPI.Controllers
 {
@@ -10,11 +11,13 @@ namespace PetProjecAPI.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env;
+        private readonly FileStorageService _fileStorageService;
 
         public UserPhotosController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
             _env = env;
+            _fileStorageService = new FileStorageService(env);
         }
 
         [HttpGet("{userId}")]
@@ -42,22 +45,7 @@ namespace PetProjecAPI.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("Файл не выбран");
 
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-
-            var imagesFolder = Path.Combine(_env.WebRootPath, "images");
-            if (!Directory.Exists(imagesFolder))
-            {
-                Directory.CreateDirectory(imagesFolder);
-            }
-            var savePath = Path.Combine(imagesFolder, fileName);
-
-            using (var stream = new FileStream(savePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            
-            var fileUrl = $"{Request.Scheme}://{Request.Host}/images/{fileName}";
+            string fileUrl = await _fileStorageService.SaveFileAndGetUrl(file, Request);
 
             var userPhoto = new UserPhoto
             {
@@ -96,6 +84,7 @@ namespace PetProjecAPI.Controllers
             var userPhoto = await _context.UserPhotos.FindAsync(id);
             if (userPhoto == null) return NotFound();
 
+            await _fileStorageService.DeleteFileByUrlAsync(userPhoto.PhotoURL, Request);
             _context.UserPhotos.Remove(userPhoto);
             await _context.SaveChangesAsync();
             return NoContent();
