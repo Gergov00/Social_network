@@ -4,9 +4,7 @@ import '../Assets/ProfilePage.css';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
 
-    // Функция безопасного парсинга JSON
     function safeParse(jsonString) {
         try {
             return JSON.parse(jsonString);
@@ -28,6 +26,12 @@ const ProfilePage = () => {
         }
     }, [user, navigate]);
 
+    const handleLogout = () => {
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        navigate('/auth');
+    };
+
     if (!user) {
         return <p>Пользователь не авторизован. Пожалуйста, выполните вход.</p>;
     }
@@ -36,7 +40,7 @@ const ProfilePage = () => {
         <div className="profile-container">
             <div className="profile-cover">
                 <img
-                    src={user.cover || 'https://sun9-33.userapi.com/impf/Ce-dT6lYDP47lpGzYqYOc0gq6ymBwiQrs9mXQw/UY7k4fz4OA0.jpg?size=1080x540&quality=96&crop=0,282,1080,540&sign=946773e0bd7b110559a5be6d138955ae&c_uniq_tag=C8OiUIWg_d6fe85Csb3efUS3CWNvKXmzv5ZsLqQ9ghM&type=helpers&quot'}
+                    src={user.cover || 'https://sun9-33.userapi.com/impf/Ce-dT6lYDP47lpGzYqYOc0gq6ymBwiQrs9mXQw/UY7k4fz4OA0.jpg?size=1080x540&quality=96&crop=0,282,1080,540&sign=946773e0bd7b110559a5be6d138955ae&c_uniq_tag=C8OiUIWg_d6fe85Csb3efUS3CWNvKXmzv5ZsLqQ9ghM&type=helpers'}
                     alt="Cover"
                     className="cover-photo"
                 />
@@ -51,9 +55,11 @@ const ProfilePage = () => {
                 <div className="user-details">
                     <h1>{user.firstName} {user.lastName}</h1>
                     <p className="status">{user.status || 'Статус не указан'}</p>
-                    {/* Кнопка для перехода на страницу редактирования профиля */}
                     <button onClick={() => navigate('/edit-profile')}>
                         Редактировать профиль
+                    </button>
+                    <button onClick={handleLogout} style={{ marginLeft: '10px' }}>
+                        Выйти
                     </button>
                 </div>
             </div>

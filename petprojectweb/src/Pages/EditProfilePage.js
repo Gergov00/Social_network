@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateProfile } from '../Services/Api'; // Функция для вызова PUT-запроса
+import { updateProfile } from '../Services/Api'; 
 import '../Assets/EditProfilePage.css';
 
 const EditProfilePage = () => {
     const navigate = useNavigate();
 
-    // Получаем сохранённого пользователя из localStorage
     const savedUser = localStorage.getItem("user");
     const initialUser = savedUser ? JSON.parse(savedUser) : null;
 
-    // Если пользователя нет, перенаправляем на страницу логина
     useEffect(() => {
         if (!initialUser) {
             navigate('/auth');
@@ -34,9 +32,7 @@ const EditProfilePage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Вызываем функцию обновления профиля
             const updatedUser = await updateProfile(initialUser.id, firstName, lastName, avatarFile);
-            // Обновляем данные в localStorage
             localStorage.setItem("user", JSON.stringify(updatedUser));
             navigate('/profile');
         } catch (err) {
