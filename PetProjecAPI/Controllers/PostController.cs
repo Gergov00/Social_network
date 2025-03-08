@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetProjecAPI.DB;
+using PetProjecAPI.Services; // для IFileStorageService
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace PetProjecAPI.Controllers
 {
@@ -9,10 +13,14 @@ namespace PetProjecAPI.Controllers
     public class PostsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _env;
+        private readonly FileStorageService _fileStorageService;
 
-        public PostsController(AppDbContext context)
+        public PostsController(AppDbContext context, IWebHostEnvironment env)
         {
             _context = context;
+            _env = env;
+            _fileStorageService = new FileStorageService(env);
         }
 
         // GET: api/Posts
@@ -31,10 +39,27 @@ namespace PetProjecAPI.Controllers
             return post;
         }
 
-        // POST: api/Posts
-        [HttpPost]
-        public async Task<ActionResult<Post>> CreatePost([FromBody] Post post)
+        // POST: api/Posts/create
+        [HttpPost("create")]
+        public async Task<ActionResult<Post>> CreatePost(
+            [FromForm] IFormFile file,
+            [FromForm] int userId,
+            [FromForm] string content,
+            [FromForm] DateTime createdAt)
         {
+            string fileUrl = "";
+            if (file != null && file.Length > 0)
+            {
+                fileUrl = await _fileStorageService.SaveFileAndGetUrl(file, Request);
+            }
+
+            var post = new Post
+            {
+                UserId = userId,
+                Content = content,
+                PhotoUrl = fileUrl,
+                CreatedAt = createdAt
+            };
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
@@ -65,6 +90,12 @@ namespace PetProjecAPI.Controllers
         {
             var post = await _context.Posts.FindAsync(id);
             if (post == null) return NotFound();
+
+            // Если у поста есть фото, удаляем его с сервера
+            if (!string.IsNullOrEmpty(post.PhotoUrl))
+            {
+                await _fileStorageService.DeleteFileByUrlAsync(post.PhotoUrl, Request);
+            }
 
             _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
