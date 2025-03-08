@@ -48,3 +48,58 @@ export async function updateProfile(userId, firstName, lastName, avatarFile) {
     }
     return await response.json();
 }
+
+export async function getUserPhotos(userId) {
+    const response = await fetch(`${ API_BASE_URL }/UserPhotos/${userId}`);
+    if (!response.ok) {
+        throw new Error('Ошибка загрузки фотографий');
+    }
+    const data = await response.json();
+    console.log(response);
+    return data.map(photo => ({
+        id: photo.id,
+        url: photo.photoURL,
+        createdAt: photo.createdAt,
+    }));
+}
+
+export async function uploadUserPhoto(userId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('userId', userId);
+
+    const response = await fetch(`${API_BASE_URL }/UserPhotos/upload`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        throw new Error('Ошибка загрузки фотографии');
+    }
+
+    return await response.json();
+}
+
+
+export async function getPosts() {
+    const response = await fetch(`${API_BASE_URL}/Posts`);
+    if (!response.ok) {
+        throw new Error('Ошибка загрузки постов');
+    }
+    return await response.json();
+}
+
+export async function createPost(post) {
+    const response = await fetch(`${API_BASE_URL}/Posts`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(post),
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка создания поста');
+    }
+    return await response.json();
+}
