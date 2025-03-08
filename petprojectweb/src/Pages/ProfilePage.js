@@ -1,51 +1,42 @@
-import React, { act, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Assets/ProfilePage.css';
-import { getUserPhotos, uploadUserPhoto, getPostsByUser, deletePhoto} from '../Services/Api';
+import { getUserPhotos, uploadUserPhoto, getPostsByUser, deletePhoto } from '../Services/Api';
 import PostsComponent from '../Components/PostsComponent';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
 
-    function safeParse(jsonString) {
+    const safeParse = (jsonString) => {
         try {
             return JSON.parse(jsonString);
         } catch (error) {
             console.error("Ошибка парсинга JSON:", error);
             return null;
         }
-    }
+    };
 
     const [user, setUser] = useState(() => {
         const savedUser = localStorage.getItem("user");
         return savedUser ? safeParse(savedUser) : null;
     });
-
-    // Состояние для отслеживания выбранного пункта меню
     const [activeTab, setActiveTab] = useState('about');
-
-    // Состояния для загрузки фотографий
     const [photos, setPhotos] = useState([]);
     const [photosLoading, setPhotosLoading] = useState(false);
     const [photosError, setPhotosError] = useState(null);
-
-    // Состояния для загрузки новой фотографии
     const [uploadPhotoFile, setUploadPhotoFile] = useState(null);
     const [uploadLoading, setUploadLoading] = useState(false);
     const [uploadError, setUploadError] = useState(null);
-
     const [postsLoading, setPostsLoding] = useState(null);
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState([]);
     const [postsError, setPostsError] = useState(null);
 
     useEffect(() => {
         if (!user) {
-            console.log("Нет сохраненных данных пользователя");
             navigate('/auth');
         }
     }, [user, navigate]);
 
-    // Загружаем фотографии, когда выбрана вкладка "photos"
     useEffect(() => {
         if (activeTab === 'photos' && user) {
             setPhotosLoading(true);
@@ -66,14 +57,13 @@ const ProfilePage = () => {
             setPostsLoding(true);
             getPostsByUser(user.id)
                 .then(data => {
-                    console.log(data);
                     setPosts(data);
                     setPostsLoding(false);
                 })
                 .catch(err => {
                     setPostsError(err);
                     setPostsLoding(false);
-                })
+                });
         }
     }, [activeTab, user]);
 
@@ -83,27 +73,23 @@ const ProfilePage = () => {
         navigate('/auth');
     };
 
-    // Обработчик выбора файла
     const handleFileChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             setUploadPhotoFile(e.target.files[0]);
         }
     };
 
-    // Обработчик загрузки фотографии
     const handlePhotoUpload = async () => {
         if (!uploadPhotoFile) return;
         setUploadLoading(true);
         setUploadError(null);
         try {
             const newPhoto = await uploadUserPhoto(user.id, uploadPhotoFile);
-            // Приводим объект к нужной структуре, если требуется:
             const formattedPhoto = {
                 id: newPhoto.id,
-                url: newPhoto.photoURL, // или другое имя поля, соответствующее тому, что ожидается
+                url: newPhoto.photoURL,
                 createdAt: newPhoto.createdAt,
             };
-            // Добавляем новую фотографию в начало списка
             setPhotos(prevPhotos => [formattedPhoto, ...prevPhotos]);
             setUploadPhotoFile(null);
         } catch (error) {
@@ -112,7 +98,6 @@ const ProfilePage = () => {
             setUploadLoading(false);
         }
     };
-
 
     if (!user) {
         return <p>Пользователь не авторизован. Пожалуйста, выполните вход.</p>;
@@ -127,8 +112,6 @@ const ProfilePage = () => {
         }
     };
 
-
-    // Функция для отображения контента в зависимости от выбранной вкладки
     const renderContent = () => {
         switch (activeTab) {
             case 'about':
@@ -150,15 +133,8 @@ const ProfilePage = () => {
                     <>
                         <h2>Фотографии</h2>
                         <div className="upload-photo">
-                            <input
-                                type="file"
-                                onChange={handleFileChange}
-                                accept="image/*"
-                            />
-                            <button
-                                onClick={handlePhotoUpload}
-                                disabled={uploadLoading}
-                            >
+                            <input type="file" onChange={handleFileChange} accept="image/*" />
+                            <button onClick={handlePhotoUpload} disabled={uploadLoading}>
                                 {uploadLoading ? 'Загрузка...' : 'Загрузить фотографию'}
                             </button>
                             {uploadError && <p className="error">Ошибка загрузки: {uploadError}</p>}
@@ -166,26 +142,17 @@ const ProfilePage = () => {
                         {photosLoading && <p>Загрузка фотографий...</p>}
                         {photosError && <p>Ошибка загрузки: {photosError.message}</p>}
                         <div className="photos-gallery">
-                            {photos.map((photo) => (
-                                <><img
-                                    key={photo.id}
-                                    src={photo.url}
-                                    alt={photo.description || 'Фотография'}
-                                    className="photo-item"
-                                />
-                                    <button onClick={() => handlePhotoDelete(photo) }>Удалить</button>
-                                </>
+                            {photos.map(photo => (
+                                <React.Fragment key={photo.id}>
+                                    <img src={photo.url} alt={photo.description || 'Фотография'} className="photo-item" />
+                                    <button onClick={() => handlePhotoDelete(photo)}>Удалить</button>
+                                </React.Fragment>
                             ))}
                         </div>
                     </>
                 );
             case 'posts':
-                return (
-                    <>
-                        <PostsComponent userId={user.id}/>
-                    </>
-                );
-
+                return <PostsComponent userId={user.id} />;
             default:
                 return null;
         }
@@ -202,57 +169,25 @@ const ProfilePage = () => {
             </div>
             <div className="profile-info">
                 <div className="avatar">
-                    <img
-                        src={user.avatarURL}
-                        alt="Avatar"
-                    />
+                    <img src={user.avatarURL} alt="Avatar" />
                 </div>
                 <div className="user-details">
                     <h1>{user.firstName} {user.lastName}</h1>
-                    <button onClick={() => navigate('/edit-profile')}>
-                        Редактировать профиль
-                    </button>
-                    <button onClick={handleLogout} style={{ marginLeft: '10px' }}>
-                        Выйти
-                    </button>
-                    <button onClick={() => navigate('/newsfeed')} style={{ marginLeft: '10px' }}>
-                        Новости
-                    </button>
+                    <button onClick={() => navigate('/edit-profile')}>Редактировать профиль</button>
+                    <button onClick={handleLogout} style={{ marginLeft: '10px' }}>Выйти</button>
+                    <button onClick={() => navigate('/newsfeed')} style={{ marginLeft: '10px' }}>Новости</button>
                 </div>
             </div>
             <div className="profile-content">
                 <div className="sidebar">
                     <ul className="menu">
-                        <li
-                            onClick={() => setActiveTab('about')}
-                            className={activeTab === 'about' ? 'active' : ''}
-                        >
-                            О себе
-                        </li>
-                        <li
-                            onClick={() => setActiveTab('friends')}
-                            className={activeTab === 'friends' ? 'active' : ''}
-                        >
-                            Друзья
-                        </li>
-                        <li
-                            onClick={() => setActiveTab('photos')}
-                            className={activeTab === 'photos' ? 'active' : ''}
-                        >
-                            Фотографии
-                        </li>
-                        <li
-                            onClick={() => setActiveTab('posts')}
-                            className={activeTab === 'posts' ? 'active' : ''}
-                        >
-                            Посты
-                        </li>
-
+                        <li onClick={() => setActiveTab('about')} className={activeTab === 'about' ? 'active' : ''}>О себе</li>
+                        <li onClick={() => setActiveTab('friends')} className={activeTab === 'friends' ? 'active' : ''}>Друзья</li>
+                        <li onClick={() => setActiveTab('photos')} className={activeTab === 'photos' ? 'active' : ''}>Фотографии</li>
+                        <li onClick={() => setActiveTab('posts')} className={activeTab === 'posts' ? 'active' : ''}>Посты</li>
                     </ul>
                 </div>
-                <div className="main-content">
-                    {renderContent()}
-                </div>
+                <div className="main-content">{renderContent()}</div>
             </div>
         </div>
     );
