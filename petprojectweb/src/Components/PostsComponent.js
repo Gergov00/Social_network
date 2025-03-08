@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { getPosts, createPost } from '../Services/Api';
+import { getPosts, createPost, deletePost } from '../Services/Api';
 
-const Post = ({ post }) => {
+export const Post = ({ post, userId, onDelete }) => {
+
+    const handleDelete = async () => {
+        if (!onDelete) return;
+        try {
+            await deletePost(post.id);
+            onDelete(post.id);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+
     return (
         <div className="post">
             <div className="post-header">
@@ -17,6 +29,8 @@ const Post = ({ post }) => {
                 <span>{post.postLikes?.length || 0} лайков</span>
                 <button>Комментировать</button>
                 <span>{post.comments?.length || 0} комментариев</span>
+                {post.userId === userId && <button onClick={handleDelete}>Удалить</button>}
+
             </div>
         </div>
     );
@@ -74,7 +88,7 @@ const NewPostForm = ({ onPostCreated }) => {
     );
 };
 
-const PostsComponent = () => {
+const PostsComponent = ({ userId }) => {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -100,6 +114,10 @@ const PostsComponent = () => {
         setPosts(prevPosts => [newPost, ...prevPosts]);
     };
 
+    const handlePostDelete = (deletedPostId) => {
+        setPosts(prevPosts => prevPosts.filter(post => post.id !== deletedPostId));
+    };
+
     return (
         <div className="posts-component">
             <NewPostForm onPostCreated={handlePostCreated} />
@@ -107,7 +125,7 @@ const PostsComponent = () => {
             {error && <p className="error">{error}</p>}
             <div className="posts-list">
                 {posts.map(post => (
-                    <Post key={post.id} post={post} />
+                    <Post key={post.id} post={post} userId={userId} onDelete={handlePostDelete} />
                 ))}
             </div>
         </div>
