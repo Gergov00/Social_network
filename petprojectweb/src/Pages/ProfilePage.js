@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import '../Assets/ProfilePage.css';
+import { getUserPhotos, uploadUserPhoto } from '../Services/Api';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -19,6 +20,19 @@ const ProfilePage = () => {
         return savedUser ? safeParse(savedUser) : null;
     });
 
+    // Состояние для отслеживания выбранного пункта меню
+    const [activeTab, setActiveTab] = useState('about');
+
+    // Состояния для загрузки фотографий
+    const [photos, setPhotos] = useState([]);
+    const [photosLoading, setPhotosLoading] = useState(false);
+    const [photosError, setPhotosError] = useState(null);
+
+    // Состояния для загрузки новой фотографии
+    const [uploadPhotoFile, setUploadPhotoFile] = useState(null);
+    const [uploadLoading, setUploadLoading] = useState(false);
+    const [uploadError, setUploadError] = useState(null);
+
     useEffect(() => {
         if (!user) {
             console.log("Нет сохраненных данных пользователя");
@@ -26,15 +40,123 @@ const ProfilePage = () => {
         }
     }, [user, navigate]);
 
+    // Загружаем фотографии, когда выбрана вкладка "photos"
+    useEffect(() => {
+        if (activeTab === 'photos' && user) {
+            setPhotosLoading(true);
+            getUserPhotos(user.id)
+                .then(data => {
+                    setPhotos(data);
+                    setPhotosLoading(false);
+                })
+                .catch(err => {
+                    setPhotosError(err);
+                    setPhotosLoading(false);
+                });
+        }
+    }, [activeTab, user]);
+
     const handleLogout = () => {
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         navigate('/auth');
     };
 
+    // Обработчик выбора файла
+    const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setUploadPhotoFile(e.target.files[0]);
+        }
+    };
+
+    // Обработчик загрузки фотографии
+    const handlePhotoUpload = async () => {
+        if (!uploadPhotoFile) return;
+        setUploadLoading(true);
+        setUploadError(null);
+        try {
+            const newPhoto = await uploadUserPhoto(user.id, uploadPhotoFile);
+            // Добавляем новую фотографию в начало списка
+            setPhotos(prevPhotos => [newPhoto, ...prevPhotos]);
+            setUploadPhotoFile(null);
+        } catch (error) {
+            setUploadError(error.message);
+        } finally {
+            setUploadLoading(false);
+        }
+    };
+
     if (!user) {
         return <p>Пользователь не авторизован. Пожалуйста, выполните вход.</p>;
     }
+
+    // Функция для отображения контента в зависимости от выбранной вкладки
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'about':
+                return (
+                    <>
+                        <h2>О себе</h2>
+                        <p>{user.about || 'Информация отсутствует'}</p>
+                    </>
+                );
+            case 'friends':
+                return (
+                    <>
+                        <h2>Друзья</h2>
+                        <p>Список друзей отсутствует.</p>
+                    </>
+                );
+            case 'photos':
+                return (
+                    <>
+                        <h2>Фотографии</h2>
+                        <div className="upload-photo">
+                            <input
+                                type="file"
+                                onChange={handleFileChange}
+                                accept="image/*"
+                            />
+                            <button
+                                onClick={handlePhotoUpload}
+                                disabled={uploadLoading}
+                            >
+                                {uploadLoading ? 'Загрузка...' : 'Загрузить фотографию'}
+                            </button>
+                            {uploadError && <p className="error">Ошибка загрузки: {uploadError}</p>}
+                        </div>
+                        {photosLoading && <p>Загрузка фотографий...</p>}
+                        {photosError && <p>Ошибка загрузки: {photosError.message}</p>}
+                        <div className="photos-gallery">
+                            {photos.map((photo) => (
+                                <img
+                                    key={photo.id}
+                                    src={photo.url}
+                                    alt={photo.description || 'Фотография'}
+                                    className="photo-item"
+                                />
+                            ))}
+                        </div>
+                    </>
+                );
+            case 'videos':
+                return (
+                    <>
+                        <h2>Видео</h2>
+                        <p>Видео отсутствуют.</p>
+                    </>
+                );
+            case 'messages':
+                return (
+                    <>
+                        <h2>Сообщения</h2>
+                        <p>Сообщения отсутствуют.</p>
+                    </>
+                );
+            default:
+                return null;
+        }
+    };
 
     return (
         <div className="profile-container">
@@ -54,28 +176,54 @@ const ProfilePage = () => {
                 </div>
                 <div className="user-details">
                     <h1>{user.firstName} {user.lastName}</h1>
-                    <p className="status">{user.status || 'Статус не указан'}</p>
                     <button onClick={() => navigate('/edit-profile')}>
                         Редактировать профиль
                     </button>
                     <button onClick={handleLogout} style={{ marginLeft: '10px' }}>
                         Выйти
                     </button>
+                    <button onClick={() => navigate('/newsfeed')} style={{ marginLeft: '10px' }}>
+                        Новости
+                    </button>
                 </div>
             </div>
             <div className="profile-content">
                 <div className="sidebar">
                     <ul className="menu">
-                        <li>О себе</li>
-                        <li>Друзья</li>
-                        <li>Фотографии</li>
-                        <li>Видео</li>
-                        <li>Сообщения</li>
+                        <li
+                            onClick={() => setActiveTab('about')}
+                            className={activeTab === 'about' ? 'active' : ''}
+                        >
+                            О себе
+                        </li>
+                        <li
+                            onClick={() => setActiveTab('friends')}
+                            className={activeTab === 'friends' ? 'active' : ''}
+                        >
+                            Друзья
+                        </li>
+                        <li
+                            onClick={() => setActiveTab('photos')}
+                            className={activeTab === 'photos' ? 'active' : ''}
+                        >
+                            Фотографии
+                        </li>
+                        <li
+                            onClick={() => setActiveTab('videos')}
+                            className={activeTab === 'videos' ? 'active' : ''}
+                        >
+                            Видео
+                        </li>
+                        <li
+                            onClick={() => setActiveTab('messages')}
+                            className={activeTab === 'messages' ? 'active' : ''}
+                        >
+                            Сообщения
+                        </li>
                     </ul>
                 </div>
                 <div className="main-content">
-                    <h2>О себе</h2>
-                    <p>{user.about || 'Информация отсутствует'}</p>
+                    {renderContent()}
                 </div>
             </div>
         </div>

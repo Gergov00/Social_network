@@ -15,14 +15,12 @@ namespace PetProjecAPI.Controllers
             _context = context;
         }
 
-        // GET: api/CommentLikes
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CommentLike>>> GetCommentLikes()
         {
             return await _context.CommentLikes.ToListAsync();
         }
 
-        // GET: api/CommentLikes/5
         [HttpGet("{id}")]
         public async Task<ActionResult<CommentLike>> GetCommentLike(int id)
         {
@@ -31,7 +29,6 @@ namespace PetProjecAPI.Controllers
             return commentLike;
         }
 
-        // POST: api/CommentLikes
         [HttpPost]
         public async Task<ActionResult<CommentLike>> CreateCommentLike([FromBody] CommentLike commentLike)
         {
@@ -40,7 +37,6 @@ namespace PetProjecAPI.Controllers
             return CreatedAtAction(nameof(GetCommentLike), new { id = commentLike.Id }, commentLike);
         }
 
-        // PUT: api/CommentLikes/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCommentLike(int id, [FromBody] CommentLike commentLike)
         {
@@ -59,7 +55,6 @@ namespace PetProjecAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/CommentLikes/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommentLike(int id)
         {

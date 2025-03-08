@@ -1,4 +1,10 @@
 /* ��������� ������� */
+html, body {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+}
+
 .profile-container {
     width: 100%;
     max-width: 1200px;

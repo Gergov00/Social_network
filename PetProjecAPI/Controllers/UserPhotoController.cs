@@ -17,15 +17,18 @@ namespace PetProjecAPI.Controllers
             _env = env;
         }
 
-        // GET: api/UserPhotos
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserPhoto>>> GetUserPhotos()
+        [HttpGet("{userId}")]
+        public async Task<ActionResult<IEnumerable<UserPhoto>>> GetUserPhotos(int userId)
         {
-            return await _context.UserPhotos.ToListAsync();
+            var photos = await _context.UserPhotos
+                .Where(p => p.UserId == userId)
+                .OrderByDescending(photo => photo.CreatedAt)
+                .ToListAsync();
+            if(photos ==  null || photos.Count == 0) return NotFound();
+            return Ok(photos);
         }
 
-        // GET: api/UserPhotos/5
-        [HttpGet("{id}")]
+        [HttpGet("photos/{id}")]
         public async Task<ActionResult<UserPhoto>> GetUserPhoto(int id)
         {
             var userPhoto = await _context.UserPhotos.FindAsync(id);
@@ -33,17 +36,14 @@ namespace PetProjecAPI.Controllers
             return userPhoto;
         }
 
-        // POST: api/UserPhotos
         [HttpPost("upload")]
         public async Task<IActionResult> UploadUserPhoto([FromForm] IFormFile file, [FromForm] int userId)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("Файл не выбран");
 
-            // Генерация уникального имени для файла, чтобы избежать коллизий
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
 
-            // Формирование пути для сохранения файла в папке wwwroot/images
             var imagesFolder = Path.Combine(_env.WebRootPath, "images");
             if (!Directory.Exists(imagesFolder))
             {
@@ -51,17 +51,14 @@ namespace PetProjecAPI.Controllers
             }
             var savePath = Path.Combine(imagesFolder, fileName);
 
-            // Сохранение файла на диск
             using (var stream = new FileStream(savePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // Формирование URL файла
-            // Например: http://localhost:8000/images/{fileName} или с доменом
+            
             var fileUrl = $"{Request.Scheme}://{Request.Host}/images/{fileName}";
 
-            // Создание новой записи UserPhoto с URL
             var userPhoto = new UserPhoto
             {
                 UserId = userId,
@@ -75,7 +72,6 @@ namespace PetProjecAPI.Controllers
             return Ok(userPhoto);
         }
 
-        // PUT: api/UserPhotos/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUserPhoto(int id, [FromBody] UserPhoto userPhoto)
         {
@@ -94,7 +90,6 @@ namespace PetProjecAPI.Controllers
             return NoContent();
         }
 
-        // DELETE: api/UserPhotos/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserPhoto(int id)
         {

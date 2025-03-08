@@ -4,6 +4,7 @@ import AuthPage from './Pages/AuthPage';
 import ProfilePage from './Pages/ProfilePage';
 import EditProfilePage from './Pages/EditProfilePage';
 import MainPage from './Pages/MainPage'; 
+import NewsFeedPage from './Pages/NewsFeedPage';
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/edit-profile" element={<EditProfilePage />} />
                 <Route path="/" element={<MainPage />} />
+                <Route path="/newsfeed" element={<NewsFeedPage/> }/>
             </Routes>
         </BrowserRouter>
     );
