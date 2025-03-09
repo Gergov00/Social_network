@@ -1,8 +1,6 @@
-// Header.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../Assets/NewsFeedPage.css'; // или подключите нужные стили
-
+import '../Assets/Header.css'; 
 const Header = () => {
     const navigate = useNavigate();
     const [activeMenu, setActiveMenu] = useState('');
@@ -18,7 +16,6 @@ const Header = () => {
         if (menuItem === 'news') {
             navigate('/newsfeed')
         }
-        // Добавьте дополнительную навигацию для других пунктов, если необходимо
     };
 
     return (
@@ -32,7 +29,7 @@ const Header = () => {
                     <li className={activeMenu === 'news' ? 'active' : ''} onClick={() => handleMenuClick('news')}>Новости</li>
                     <li className={activeMenu === 'friends' ? 'active' : ''} onClick={() => handleMenuClick('friends')}>Друзья</li>
                     <li className={activeMenu === 'search' ? 'active' : ''} onClick={() => handleMenuClick('search')}>Поиск</li>
-                    <li className={activeMenu === 'settings' ? 'active' : ''} onClick={() => handleMenuClick('settings')}>Настройки</li>
+                    <li className={activeMenu === 'messege' ? 'active' : ''} onClick={() => handleMenuClick('messege')}>Сообщение</li>
                 </ul>
             </nav>
             <div className="search-bar">

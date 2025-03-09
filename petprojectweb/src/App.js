@@ -14,7 +14,7 @@ function App() {
             <Routes>
                 {/* Маршруты, где мини-бар нужен */}
                 <Route element={<Layout />}>
-                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/profile/:userId?" element={<ProfilePage />} />
                     <Route path="/edit-profile" element={<EditProfilePage />} />
                     <Route path="/" element={<MainPage />} />
                     <Route path="/newsfeed" element={<NewsFeedPage />} />

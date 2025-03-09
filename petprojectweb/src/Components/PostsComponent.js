@@ -1,7 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { getPosts, createPost, deletePost } from '../Services/Api';
+import { useNavigate } from 'react-router-dom';
+
+import { getPosts, createPost, deletePost, getUserById } from '../Services/Api';
+import '../Assets/PostsComponent.css';
 
 export const Post = ({ post, userId, onDelete }) => {
+    const navigate = useNavigate();
+    const [user, setUser] = useState(null)
+    useEffect(() => {
+        getUserById(post.userId)
+            .then(data => {
+                setUser(data);
+            })
+    }, [post]);
+
 
     const handleDelete = async () => {
         if (!onDelete) return;
@@ -12,12 +24,24 @@ export const Post = ({ post, userId, onDelete }) => {
             console.log(err);
         }
     }
-
+    console.log(user?.avatarURL);
 
     return (
         <div className="post">
             <div className="post-header">
-                <h3>{post.user?.firstName} {post.user?.lastName}</h3>
+                <div className="user-info" onClick={() => post.userId !== userId ? navigate(`/profile/${post.userId}`) : navigate('/profile')}>
+                    {user && user?.avatarURL && (
+                        <img
+                            src={user.avatarURL}
+                            alt="Аватар пользователя"
+                            className="avatar"
+                        />
+                    )}
+                    <h3>
+                        {user ? `${user.firstName} ${user.lastName}` : 'Загрузка...'}
+                    </h3>
+                </div>
+
                 <span>{new Date(post.createdAt).toLocaleString()}</span>
             </div>
             <div className="post-content">
@@ -88,7 +112,7 @@ const NewPostForm = ({ onPostCreated }) => {
     );
 };
 
-const PostsComponent = ({ userId }) => {
+const PostsComponent = ({ userId, viewProfile }) => {
     const [posts, setPosts] = useState([]);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -120,7 +144,7 @@ const PostsComponent = ({ userId }) => {
 
     return (
         <div className="posts-component">
-            <NewPostForm onPostCreated={handlePostCreated} />
+            {!viewProfile ? <NewPostForm onPostCreated={handlePostCreated} /> : ''}
             {loading && <p>Загрузка постов...</p>}
             {error && <p className="error">{error}</p>}
             <div className="posts-list">
