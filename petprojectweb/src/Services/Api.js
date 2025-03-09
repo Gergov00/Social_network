@@ -138,3 +138,13 @@ export async function deletePhoto(photoId) {
     }
     return true;
 }
+
+export async function getUserById(userId) {
+    const response = await fetch(`${API_BASE_URL}/Users/${userId}`, {
+        method: 'GET',
+    });
+    if (!response.ok) {
+        throw new Error(response.json().message || 'Ошибка получение данных пользователя');
+    }
+    return await response.json();
+}
