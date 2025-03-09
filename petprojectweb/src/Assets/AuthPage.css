@@ -93,8 +93,7 @@ h1 {
         flex: 1;
     }
 
-/* ����� */
-label {
+.tab-content label {
     position: absolute;
     top: 14px;
     left: 13px;

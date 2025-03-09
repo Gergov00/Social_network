@@ -1,4 +1,3 @@
-/* EditProfilePage.css */
 .edit-profile-container {
     max-width: 600px;
     margin: 40px auto;
@@ -17,14 +16,17 @@
     }
 
     .edit-profile-container form div {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        gap: 5px; /* Отступ между label и input */
         margin-bottom: 15px;
+        align-items: start;
     }
 
     .edit-profile-container form label {
-        display: block;
-        margin-bottom: 5px;
         font-weight: 600;
         color: #555;
+        text-align: left;
     }
 
     .edit-profile-container form input[type="text"],
