@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Validations;
 using PetProjecAPI.DB;
 
 namespace PetProjecAPI.Controllers
@@ -27,6 +28,15 @@ namespace PetProjecAPI.Controllers
             var commentLike = await _context.CommentLikes.FindAsync(id);
             if (commentLike == null) return NotFound();
             return commentLike;
+        }
+
+        [HttpGet("likes/{commentId}")]
+        public async Task<ActionResult<IEnumerable<CommentLike>>> GetLikeByCommentId(int commentId)
+        {
+            var likes = await _context.CommentLikes
+                .Where(e => e.CommentId == commentId)
+                .ToListAsync();
+            return Ok(likes);
         }
 
         [HttpPost]

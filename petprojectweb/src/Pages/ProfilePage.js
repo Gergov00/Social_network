@@ -8,7 +8,7 @@ import PostsComponent from '../Components/PostsComponent';
 const ProfilePage = () => {
     const navigate = useNavigate();
     const { userId: routeUserId } = useParams();
-    const { user: currentUser } = useUser();
+    const { user: currentUser, logoutUser } = useUser();
 
     const [profileUser, setProfileUser] = useState(null);
     const [activeTab, setActiveTab] = useState('about');
@@ -53,8 +53,7 @@ const ProfilePage = () => {
     }, [activeTab, profileUser]);
 
     const handleLogout = () => {
-        localStorage.removeItem("user");
-        localStorage.removeItem("token");
+        logoutUser();
         navigate('/auth');
     };
 

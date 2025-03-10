@@ -126,3 +126,246 @@ html, body {
     color: red;
     margin-top: 8px;
 }
+
+/* Стили для секции комментариев */
+.comments-section {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+.comment {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+    .comment p {
+        margin: 0;
+    }
+
+/* Стили для формы добавления нового комментария */
+.new-comment {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+    .new-comment input {
+        flex: 1;
+        padding: 6px 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+    }
+
+    .new-comment button {
+        background-color: #4267B2;
+        color: #fff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+        .new-comment button:hover {
+            background-color: #365899;
+        }
+
+/* Обновлённый стиль для постов в стиле ВКонтакте */
+.posts-component {
+    background-color: #f0f2f5;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.post {
+    background-color: #ffffff;
+    border: 1px solid #dfe3ee;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    margin-bottom: 16px;
+    font-family: Arial, sans-serif;
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+    .user-info:hover {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+
+    .user-info img.avatar {
+        border-radius: 50%;
+        width: 48px;
+        height: 48px;
+        margin-right: 10px;
+    }
+
+.post-header h3 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: bold;
+    color: #333;
+}
+
+.post-header span {
+    color: #999;
+    font-size: 14px;
+}
+
+.post-content {
+    font-size: 15px;
+    line-height: 1.4;
+    color: #444;
+}
+
+    .post-content img {
+        max-width: 100%;
+        border-radius: 8px;
+        margin-top: 8px;
+    }
+
+.post-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+    .post-actions button {
+        background-color: transparent;
+        border: none;
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+        color: #4267B2;
+        transition: color 0.2s;
+    }
+
+        .post-actions button:hover {
+            color: #365899;
+        }
+
+    .post-actions span {
+        font-size: 14px;
+        color: #555;
+    }
+
+/* Стили для секции комментариев */
+.comments-section {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.comment {
+    background-color: #f7f7f7;
+    border: 1px solid #e3e6ea;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #555;
+}
+
+    .comment p {
+        margin: 0;
+    }
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+    cursor: pointer;
+}
+
+    .comment-header img.avatar {
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        margin-right: 8px;
+    }
+
+    .comment-header span {
+        font-size: 14px;
+        color: #333;
+        font-weight: bold;
+    }
+
+.comment-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+    .comment-actions button {
+        background-color: transparent;
+        border: none;
+        font-size: 13px;
+        color: #4267B2;
+        cursor: pointer;
+        transition: color 0.2s;
+    }
+
+        .comment-actions button:hover {
+            color: #365899;
+        }
+
+    .comment-actions span {
+        font-size: 13px;
+        color: #777;
+    }
+
+/* Стили для формы добавления нового комментария */
+.new-comment {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+    .new-comment input {
+        flex: 1;
+        padding: 8px;
+        border: 1px solid #ccd0d5;
+        border-radius: 18px;
+        font-size: 14px;
+    }
+
+    .new-comment button {
+        background-color: #4267B2;
+        border: none;
+        color: #fff;
+        padding: 8px 16px;
+        border-radius: 18px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+        .new-comment button:hover {
+            background-color: #365899;
+        }
