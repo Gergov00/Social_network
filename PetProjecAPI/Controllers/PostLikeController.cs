@@ -31,6 +31,15 @@ namespace PetProjecAPI.Controllers
             return postLike;
         }
 
+        [HttpGet("likes/{postId}")]
+        public async Task<ActionResult<IEnumerable<PostLike>>> GetLikesByPostId(int postId)
+        {
+            var likes = await _context.PostLikes
+                .Where(e =>  e.PostId == postId)
+                .ToListAsync();
+            return Ok(likes);
+        }
+
         // POST: api/PostLikes
         [HttpPost]
         public async Task<ActionResult<PostLike>> CreatePostLike([FromBody] PostLike postLike)

@@ -19,7 +19,14 @@ const AuthPage = () => {
     const [loginError, setLoginError] = useState(null);
 
     const navigate = useNavigate();
-    const { loginUser } = useUser();
+    const { user, loginUser } = useUser();
+
+    useEffect(() => {
+        if (user) {
+            navigate('/profile');
+        }
+    }, [user, navigate]);
+
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -126,7 +133,7 @@ const AuthPage = () => {
             <div className="tab-content">
                 {activeTab === 'signup' && (
                     <div id="signup">
-                        <h1>Sign Up for Free</h1>
+                        <h1 className="auth-h1"> Up for Free</h1>
                         {signupError && <p style={{ color: 'red' }}>{signupError}</p>}
                         <form onSubmit={handleSignupSubmit}>
                             <div className="top-row">
@@ -184,7 +191,7 @@ const AuthPage = () => {
                 )}
                 {activeTab === 'login' && (
                     <div id="login">
-                        <h1>Welcome Back!</h1>
+                        <h1 className="auth-h1">Welcome Back!</h1>
                         {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
                         <form onSubmit={handleLoginSubmit}>
                             <div className="field-wrap">

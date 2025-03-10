@@ -31,6 +31,15 @@ namespace PetProjecAPI.Controllers
             return comment;
         }
 
+        [HttpGet("comments/{postId}")]
+        public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByPostId(int postId)
+        {
+            var comments = await _context.Comments
+                .Where(e => e.PostId == postId)
+                .ToArrayAsync();
+            return Ok(comments);
+        }
+
         // POST: api/Comments
         [HttpPost]
         public async Task<ActionResult<Comment>> CreateComment([FromBody] Comment comment)
