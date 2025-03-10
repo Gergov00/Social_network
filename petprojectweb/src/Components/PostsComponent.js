@@ -28,23 +28,7 @@ export const Post = ({ post, userId, onDelete }) => {
 
     return (
         <div className="post">
-            <div className="post-header">
-                <div className="user-info" onClick={() => post.userId !== userId ? navigate(`/profile/${post.userId}`) : navigate('/profile')}>
-                    {user && user?.avatarURL && (
-                        <img
-                            src={user.avatarURL}
-                            alt="Аватар пользователя"
-                            className="avatar"
-                        />
-                    )}
-                    <h3>
-                        {user ? `${user.firstName} ${user.lastName}` : 'Загрузка...'}
-                    </h3>
-                </div>
-
-                <span>{new Date(post.createdAt).toLocaleString()}</span>
-            </div>
-            <div className="post-content">
+            <h3>{post.author}</h3>
                 <p>{post.content}</p>
                 {post.photoUrl && <img src={post.photoUrl} alt="Пост" />}
             </div>
