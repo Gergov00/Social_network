@@ -1,34 +1,41 @@
 import React, { useState, useEffect } from 'react';
+import { usePosts } from '../Context/PostsContext';
+import { useUser } from '../Context/UserContext';
 import { useNavigate } from 'react-router-dom';
-
-import { getPosts, createPost, deletePost, getUserById } from '../Services/Api';
+import { getUserById } from '../Services/Api';
 import '../Assets/PostsComponent.css';
 
-export const Post = ({ post, userId, onDelete }) => {
+export const Post = ({ post }) => {
+    const { removePost } = usePosts();
+    const { user } = useUser();
     const navigate = useNavigate();
-    const [user, setUser] = useState(null)
+
+    const [author, setAuthor] = useState(null); // Данные о создателе поста
+
     useEffect(() => {
-        getUserById(post.userId)
-            .then(data => {
-                setUser(data);
-            })
-    }, [post]);
+        getUserById(post.userId).then(setAuthor).catch(console.error);
+    }, [post.userId]);
 
-
-    const handleDelete = async () => {
-        if (!onDelete) return;
-        try {
-            await deletePost(post.id);
-            onDelete(post.id);
-        } catch (err) {
-            console.log(err);
-        }
-    }
-    console.log(user?.avatarURL);
 
     return (
         <div className="post">
-            <h3>{post.author}</h3>
+            <div className="post-header">
+                <div className="user-info" onClick={() => post.userId !== user.id ? navigate(`/profile/${post.userId}`) : navigate('/profile')}>
+                    {author && author?.avatarURL && (
+                        <img
+                            src={author.avatarURL}
+                            alt="Аватар пользователя"
+                            className="avatar"
+                        />
+                    )}
+                    <h3>
+                        {author ? `${author.firstName} ${author.lastName}` : 'Загрузка...'}
+                    </h3>
+                </div>
+
+                <span>{new Date(post.createdAt).toLocaleString()}</span>
+            </div>
+            <div className="post-content">
                 <p>{post.content}</p>
                 {post.photoUrl && <img src={post.photoUrl} alt="Пост" />}
             </div>
@@ -37,103 +44,56 @@ export const Post = ({ post, userId, onDelete }) => {
                 <span>{post.postLikes?.length || 0} лайков</span>
                 <button>Комментировать</button>
                 <span>{post.comments?.length || 0} комментариев</span>
-                {post.userId === userId && <button onClick={handleDelete}>Удалить</button>}
+                {post.userId === user.id && <button onClick={() => removePost(post.id)}>Удалить</button>}
 
             </div>
         </div>
     );
 };
 
-const NewPostForm = ({ onPostCreated }) => {
-    const [content, setContent] = useState('');
-    const [photo, setPhoto] = useState(null);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
-
-    const handlePhotoChange = (e) => {
-        if (e.target.files && e.target.files[0]) {
-            setPhoto(e.target.files[0]);
-        }
-    };
+export const NewPostForm = () => {
+    const { addPost } = usePosts();
+    const { user } = useUser();
+    const [content, setContent] = React.useState('');
+    const [photo, setPhoto] = React.useState(null);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError(null);
-        try {
-            const currentUser = JSON.parse(localStorage.getItem("user"));
-            const newPostData = {
-                userId: currentUser.id,
-                content,
-                createdAt: new Date().toISOString(),
-            };
-            console.log(newPostData);
-            const newPost = await createPost(newPostData, photo);
-            onPostCreated(newPost);
-            setContent('');
-            setPhoto(null);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
+        await addPost({ userId: user.id, content, createdAt: new Date().toISOString() }, photo);
+        setContent('');
+        setPhoto(null);
     };
 
     return (
         <form onSubmit={handleSubmit} className="new-post-form">
+            
             <textarea
                 placeholder="Что у вас нового?"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required
             />
-            <input type="file" accept="image/*" onChange={handlePhotoChange} />
-            {error && <p className="error">{error}</p>}
-            <button type="submit" disabled={loading}>
-                {loading ? 'Публикация...' : 'Опубликовать'}
+            <input type="file" accept="image/*" onChange={(e) => setPhoto(e.target.files[0])} />
+            <button type="submit">
+                Опубликовать
             </button>
         </form>
     );
 };
 
-const PostsComponent = ({ userId, viewProfile }) => {
-    const [posts, setPosts] = useState([]);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    const fetchPosts = async () => {
-        setLoading(true);
-        try {
-            const data = await getPosts();
-            data.sort(() => Math.random() - 0.5);
-            setPosts(data);
-        } catch (err) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
-        }
-    };
-
+const PostsComponent = ({ userId }) => {
+    const { posts, loading, fetchPosts } = usePosts();
     useEffect(() => {
-        fetchPosts();
-    }, []);
-
-    const handlePostCreated = (newPost) => {
-        setPosts(prevPosts => [newPost, ...prevPosts]);
-    };
-
-    const handlePostDelete = (deletedPostId) => {
-        setPosts(prevPosts => prevPosts.filter(post => post.id !== deletedPostId));
-    };
+        fetchPosts(userId);
+    }, [userId]);
 
     return (
         <div className="posts-component">
-            {!viewProfile ? <NewPostForm onPostCreated={handlePostCreated} /> : ''}
+            {!userId && <NewPostForm />} 
             {loading && <p>Загрузка постов...</p>}
-            {error && <p className="error">{error}</p>}
-            <div className="posts-list">
-                {posts.map(post => (
-                    <Post key={post.id} post={post} userId={userId} onDelete={handlePostDelete} />
+            <div className="post-list">
+                {posts.map((post) => (
+                    <Post key={post.id} post={post} />
                 ))}
             </div>
         </div>

@@ -1,3 +1,9 @@
+html, body {
+    background: #fff;
+    margin: 0;
+    padding: 0;
+}
+
 .new-post-form {
     background-color: #fff;
     padding: 16px;
@@ -7,7 +13,7 @@
 }
 
     .new-post-form textarea {
-        width: 100%;
+        width: 97%;
         min-height: 60px;
         border: 1px solid #ccc;
         border-radius: 4px;
@@ -15,6 +21,7 @@
         padding: 8px;
         font-size: 14px;
         margin-bottom: 8px;
+        padding-right: 10px;
     }
 
     .new-post-form input[type="file"] {
@@ -41,6 +48,7 @@
 }
 
 .post {
+    margin-bottom: 10px;
     background-color: #fff;
     padding: 16px;
     border-radius: 8px;

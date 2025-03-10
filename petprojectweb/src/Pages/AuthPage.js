@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, register } from '../Services/Api';
 import '../Assets/AuthPage.css';
-import $ from 'jquery'; 
+import $ from 'jquery';
+import { useUser } from '../Context/UserContext';
 
 const AuthPage = () => {
     const [activeTab, setActiveTab] = useState('login');
@@ -18,6 +19,7 @@ const AuthPage = () => {
     const [loginError, setLoginError] = useState(null);
 
     const navigate = useNavigate();
+    const { loginUser } = useUser();
 
     const handleTabClick = (tab) => {
         setActiveTab(tab);
@@ -39,7 +41,7 @@ const AuthPage = () => {
             const data = await login(signupEmail, signupPassword);
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
-
+            loginUser(data.user);
             navigate('/profile');
         } catch (err) {
             console.error(err);
@@ -50,20 +52,17 @@ const AuthPage = () => {
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setLoginError(null);
-
         try {
             const data = await login(loginEmail, loginPassword);
-
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data.user));
-
+            loginUser(data.user);
             navigate('/profile');
         } catch (err) {
             console.error(err);
             setLoginError(err.message);
         }
     };
-
 
     useEffect(() => {
         $('.form').on('keyup blur focus', 'input, textarea', function (e) {
@@ -90,8 +89,6 @@ const AuthPage = () => {
                 }
             }
         });
-
-
 
         $('.tab a').on('click', function (e) {
             e.preventDefault();
@@ -134,7 +131,9 @@ const AuthPage = () => {
                         <form onSubmit={handleSignupSubmit}>
                             <div className="top-row">
                                 <div className="field-wrap">
-                                    <label> First Name<span className="req">*</span></label>
+                                    <label>
+                                        First Name<span className="req">*</span>
+                                    </label>
                                     <input
                                         type="text"
                                         required
@@ -144,7 +143,7 @@ const AuthPage = () => {
                                     />
                                 </div>
                                 <div className="field-wrap">
-                                    <label> Last Name </label>
+                                    <label>Last Name</label>
                                     <input
                                         type="text"
                                         autoComplete="off"
@@ -154,7 +153,9 @@ const AuthPage = () => {
                                 </div>
                             </div>
                             <div className="field-wrap">
-                                <label>Email Address<span className="req">*</span></label>
+                                <label>
+                                    Email Address<span className="req">*</span>
+                                </label>
                                 <input
                                     type="email"
                                     required
@@ -164,7 +165,9 @@ const AuthPage = () => {
                                 />
                             </div>
                             <div className="field-wrap">
-                                <label>Set A Password<span className="req">*</span></label>
+                                <label>
+                                    Set A Password<span className="req">*</span>
+                                </label>
                                 <input
                                     type="password"
                                     required
@@ -173,7 +176,9 @@ const AuthPage = () => {
                                     onChange={(e) => setSignupPassword(e.target.value)}
                                 />
                             </div>
-                            <button type="submit" className="button button-block">Get Started</button>
+                            <button type="submit" className="button button-block">
+                                Get Started
+                            </button>
                         </form>
                     </div>
                 )}
@@ -183,7 +188,9 @@ const AuthPage = () => {
                         {loginError && <p style={{ color: 'red' }}>{loginError}</p>}
                         <form onSubmit={handleLoginSubmit}>
                             <div className="field-wrap">
-                                <label>Email Address<span className="req">*</span></label>
+                                <label>
+                                    Email Address<span className="req">*</span>
+                                </label>
                                 <input
                                     type="email"
                                     required
@@ -193,7 +200,9 @@ const AuthPage = () => {
                                 />
                             </div>
                             <div className="field-wrap">
-                                <label>Password<span className="req">*</span></label>
+                                <label>
+                                    Password<span className="req">*</span>
+                                </label>
                                 <input
                                     type="password"
                                     required
@@ -202,7 +211,9 @@ const AuthPage = () => {
                                     onChange={(e) => setLoginPassword(e.target.value)}
                                 />
                             </div>
-                            <button type="submit" className="button button-block">Log In</button>
+                            <button type="submit" className="button button-block">
+                                Log In
+                            </button>
                         </form>
                     </div>
                 )}
@@ -212,3 +223,4 @@ const AuthPage = () => {
 };
 
 export default AuthPage;
+    

@@ -1,24 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { updateProfile } from '../Services/Api'; 
+import { updateProfile } from '../Services/Api';
 import '../Assets/EditProfilePage.css';
+import { useUser } from '../Context/UserContext';
 
 const EditProfilePage = () => {
     const navigate = useNavigate();
-
-    const savedUser = localStorage.getItem("user");
-    const initialUser = savedUser ? JSON.parse(savedUser) : null;
+    const { user, loginUser } = useUser();
 
     useEffect(() => {
-        if (!initialUser) {
+        if (!user) {
             navigate('/auth');
         }
-    }, [initialUser, navigate]);
+    }, [user, navigate]);
 
-    const [firstName, setFirstName] = useState(initialUser?.firstName || '');
-    const [lastName, setLastName] = useState(initialUser?.lastName || '');
+    const [firstName, setFirstName] = useState(user?.firstName || '');
+    const [lastName, setLastName] = useState(user?.lastName || '');
     const [avatarFile, setAvatarFile] = useState(null);
-    const [previewAvatar, setPreviewAvatar] = useState(initialUser?.avatarURL || '');
+    const [previewAvatar, setPreviewAvatar] = useState(user?.avatarURL || '');
     const [error, setError] = useState('');
 
     const handleAvatarChange = (e) => {
@@ -32,8 +31,10 @@ const EditProfilePage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const updatedUser = await updateProfile(initialUser.id, firstName, lastName, avatarFile);
+            const updatedUser = await updateProfile(user.id, firstName, lastName, avatarFile);
+            // Обновляем localStorage и глобальный контекст пользователя
             localStorage.setItem("user", JSON.stringify(updatedUser));
+            loginUser(updatedUser);
             navigate('/profile');
         } catch (err) {
             setError(err.message);
@@ -60,7 +61,6 @@ const EditProfilePage = () => {
                         type="text"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
-                        required
                     />
                 </div>
                 <div>

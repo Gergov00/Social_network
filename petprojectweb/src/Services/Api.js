@@ -95,9 +95,9 @@ export async function createPost(post, file) {
     formData.append("userId", post.userId);
     formData.append("content", post.content);
     formData.append("createdAt", post.createdAt);
-    if (file) {
-        formData.append("file", file);
-    }
+    
+    formData.append("file", file);
+    console.log(file);
 
     const response = await fetch(`${API_BASE_URL}/Posts/create`, {
         method: 'POST',

@@ -51,7 +51,7 @@ namespace PetProjecAPI.Controllers
         public async Task<IActionResult> UpdateProfile(
             [FromForm] int userId,
             [FromForm] string firstName,
-            [FromForm] string lastName,
+            [FromForm] string? lastName,
             [FromForm] IFormFile? avatar)
         {
             var user = await _context.Users.FindAsync(userId);

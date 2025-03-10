@@ -51,7 +51,7 @@ namespace PetProjecAPI.Controllers
         // POST: api/Posts/create
         [HttpPost("create")]
         public async Task<ActionResult<Post>> CreatePost(
-            [FromForm] IFormFile file,
+            [FromForm] IFormFile? file,
             [FromForm] int userId,
             [FromForm] string content,
             [FromForm] DateTime createdAt)
