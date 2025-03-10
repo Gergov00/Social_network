@@ -11,7 +11,7 @@ const NewsFeedPage = () => {
             
 
             <main className="content">
-                <PostsComponent userId={userId} />
+                <PostsComponent currentUserId={userId} inProfile={false} viewProfile={false} profileUserId={-1} />
             </main>
         </div>
     );
