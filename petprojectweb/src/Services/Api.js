@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'http://www.gergovzaurbek.online/api';
+const API_BASE_URL = 'https://localhost:32771/api';
 
 export async function login(email, password) {
     const response = await fetch(`${API_BASE_URL}/Auth/login`, {
@@ -248,6 +248,15 @@ export async function getCommentsLikesByCommentId(commentId) {
     const response = await fetch(`${API_BASE_URL}/CommentLikes/likes/${commentId}`)
     if (!response.ok) {
         throw new Error(response.json().message || 'Ошибка получение данных пользователя');
+    }
+    return await response.json();
+}
+
+export async function searchUsers(query) {
+    const response = await fetch(`${API_BASE_URL}/Users/search?query=${encodeURIComponent(query)}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка поиска пользователей');
     }
     return await response.json();
 }
