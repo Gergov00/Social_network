@@ -16,8 +16,13 @@ const EditProfilePage = () => {
 
     const [firstName, setFirstName] = useState(user?.firstName || '');
     const [lastName, setLastName] = useState(user?.lastName || '');
+    const [about, setAbout] = useState(user?.about || '');
     const [avatarFile, setAvatarFile] = useState(null);
+    const [coverFile, setCoverFile] = useState(null);
     const [previewAvatar, setPreviewAvatar] = useState(user?.avatarURL || '');
+    const [previewCover, setPreviewCover] = useState(user?.coverURL || '');
+    const [removeAvatar, setRemoveAvatar] = useState(false);
+    const [removeCover, setRemoveCover] = useState(false);
     const [error, setError] = useState('');
 
     const handleAvatarChange = (e) => {
@@ -25,14 +30,44 @@ const EditProfilePage = () => {
             setAvatarFile(e.target.files[0]);
             const previewURL = URL.createObjectURL(e.target.files[0]);
             setPreviewAvatar(previewURL);
+            setRemoveAvatar(false); // сброс удаления, если выбран новый файл
         }
+    };
+
+    const handleCoverChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            setCoverFile(e.target.files[0]);
+            const previewURL = URL.createObjectURL(e.target.files[0]);
+            setPreviewCover(previewURL);
+            setRemoveCover(false);
+        }
+    };
+
+    const handleRemoveAvatar = () => {
+        setAvatarFile(null);
+        setPreviewAvatar('');
+        setRemoveAvatar(true);
+    };
+
+    const handleRemoveCover = () => {
+        setCoverFile(null);
+        setPreviewCover('');
+        setRemoveCover(true);
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const updatedUser = await updateProfile(user.id, firstName, lastName, avatarFile);
-            // Обновляем localStorage и глобальный контекст пользователя
+            const updatedUser = await updateProfile(
+                user.id,
+                firstName,
+                lastName,
+                avatarFile,
+                coverFile,
+                about,
+                removeAvatar,
+                removeCover
+            );
             localStorage.setItem("user", JSON.stringify(updatedUser));
             loginUser(updatedUser);
             navigate('/profile');
@@ -64,17 +99,45 @@ const EditProfilePage = () => {
                     />
                 </div>
                 <div>
+                    <label>О себе:</label>
+                    <input
+                        type="text"
+                        value={about}
+                        onChange={(e) => setAbout(e.target.value)}
+                    />
+                </div>
+                <div>
                     <label>Аватар:</label>
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleAvatarChange}
                     />
-                    {previewAvatar && (
+                    {previewAvatar ? (
                         <div>
                             <p>Предпросмотр аватарки:</p>
-                            <img src={previewAvatar} alt="Preview" style={{ width: '100px', height: '100px' }} />
+                            <img src={previewAvatar} alt="PreviewAvatar" style={{ width: '100px', height: '100px' }} />
+                            <button type="button" onClick={handleRemoveAvatar}>Удалить аватарку</button>
                         </div>
+                    ) : (
+                        removeAvatar && <p>Аватарка будет удалена</p>
+                    )}
+                </div>
+                <div>
+                    <label>Обложка:</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverChange}
+                    />
+                    {previewCover ? (
+                        <div>
+                            <p>Предпросмотр обложки:</p>
+                            <img src={previewCover} alt="PreviewCover" style={{ width: '480px', height: '120px' }} />
+                            <button type="button" onClick={handleRemoveCover}>Удалить обложку</button>
+                        </div>
+                    ) : (
+                        removeCover && <p>Обложка будет удалена</p>
                     )}
                 </div>
                 <button type="submit">Сохранить изменения</button>
