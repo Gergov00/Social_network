@@ -99,13 +99,19 @@ export async function deleteLikeOnPost(likeId) {
     return true;
 }
 
-export async function updateProfile(userId, firstName, lastName, avatarFile) {
+export async function updateProfile(userId, firstName, lastName, avatarFile, coverFile, about, removeAvatar, removeCover) {
     const formData = new FormData();
-    formData.append("userId", userId);
-    formData.append("firstName", firstName);
-    formData.append("lastName", lastName);
+    formData.append("UserId", userId);
+    formData.append("FirstName", firstName);
+    formData.append("LastName", lastName);
+    formData.append("About", about);
+    formData.append("RemoveAvatar", removeAvatar);
+    formData.append("RemoveCover", removeCover);
     if (avatarFile) {
-        formData.append("avatar", avatarFile);
+        formData.append("Avatar", avatarFile);
+    }
+    if (coverFile) {
+        formData.append("Cover", coverFile);
     }
 
     const response = await fetch(`${API_BASE_URL}/Users/UpdateProfile`, {
@@ -119,6 +125,7 @@ export async function updateProfile(userId, firstName, lastName, avatarFile) {
     }
     return await response.json();
 }
+
 
 export async function getUserPhotos(userId) {
     const response = await fetch(`${ API_BASE_URL }/UserPhotos/${userId}`);

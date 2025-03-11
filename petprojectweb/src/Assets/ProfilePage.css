@@ -51,13 +51,16 @@ html, body {
     }
 
 .user-details {
+    margin-bottom: 20px;
     margin-left: 20px;
 }
 
     .user-details h1 {
-        font-size: 24px;
-        margin: 0;
-        color: white;
+        -webkit-text-stroke: 1px black;
+        text-align: center;
+        color: #ffffff;
+        font-weight: 300;
+        margin-top: 15px;
     }
 
     .user-details .status {

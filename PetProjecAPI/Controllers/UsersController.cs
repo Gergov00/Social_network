@@ -48,28 +48,48 @@ namespace PetProjecAPI.Controllers
 
 
         [HttpPut("UpdateProfile")]
-        public async Task<IActionResult> UpdateProfile(
-            [FromForm] int userId,
-            [FromForm] string firstName,
-            [FromForm] string? lastName,
-            [FromForm] IFormFile? avatar)
+        public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileModel model)
         {
-            var user = await _context.Users.FindAsync(userId);
+            var user = await _context.Users.FindAsync(model.UserId);
             if (user == null)
                 return NotFound("Пользователь не найден.");
 
-            user.FirstName = firstName;
-            user.LastName = lastName;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.About = model.About;
 
-            if (avatar != null && avatar.Length > 0)
+            if (model.RemoveAvatar)
             {
                 if (!string.IsNullOrEmpty(user.AvatarURL) && !user.AvatarURL.Contains("default-avatar.png"))
                 {
                     await _fileStorageService.DeleteFileByUrlAsync(user.AvatarURL, Request);
                 }
+                user.AvatarURL = "http://gergovzaurbek.online/images/default-avatar.png";
+            }
+            else if (model.Avatar != null && model.Avatar.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(user.AvatarURL) && !user.AvatarURL.Contains("default-avatar.png"))
+                {
+                    await _fileStorageService.DeleteFileByUrlAsync(user.AvatarURL, Request);
+                }
+                user.AvatarURL = await _fileStorageService.SaveFileAndGetUrl(model.Avatar, Request);
+            }
 
-                string fileUrl = await _fileStorageService.SaveFileAndGetUrl(avatar, Request);
-                user.AvatarURL = fileUrl;
+            if (model.RemoveCover)
+            {
+                if (!string.IsNullOrEmpty(user.CoverURL))
+                {
+                    await _fileStorageService.DeleteFileByUrlAsync(user.CoverURL, Request);
+                }
+                user.CoverURL = ""; 
+            }
+            else if (model.Cover != null && model.Cover.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(user.CoverURL))
+                {
+                    await _fileStorageService.DeleteFileByUrlAsync(user.CoverURL, Request);
+                }
+                user.CoverURL = await _fileStorageService.SaveFileAndGetUrl(model.Cover, Request);
             }
 
             _context.Entry(user).State = EntityState.Modified;
@@ -77,6 +97,7 @@ namespace PetProjecAPI.Controllers
 
             return Ok(user);
         }
+
 
 
 
