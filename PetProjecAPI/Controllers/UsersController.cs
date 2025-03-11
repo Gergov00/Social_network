@@ -137,5 +137,19 @@ namespace PetProjecAPI.Controllers
         {
             return _context.Users.Any(e => e.Id == id);
         }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<User>>> SearchUsers(string query)
+        {
+            if (string.IsNullOrEmpty(query))
+            {
+                return BadRequest("Параметр запроса не может быть пустым.");
+            }
+            var users = await _context.Users
+                .Where(u => u.FirstName.ToLower().Contains(query.ToLower()) || (u.LastName != null && u.LastName.ToLower().Contains(query.ToLower())))
+                .ToListAsync();
+            return Ok(users);
+        }
+
     }
 }

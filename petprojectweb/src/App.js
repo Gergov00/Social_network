@@ -9,6 +9,7 @@ const ProfilePage = lazy(() => import('./Pages/ProfilePage'));
 const EditProfilePage = lazy(() => import('./Pages/EditProfilePage'));
 const MainPage = lazy(() => import('./Pages/MainPage'));
 const NewsFeedPage = lazy(() => import('./Pages/NewsFeedPage'));
+const SearchPage = lazy(() => import('./Pages/SearchPage'));
 
 function App() {
     return (
@@ -18,6 +19,8 @@ function App() {
                     <Suspense fallback={<p>Загрузка...</p>}>
                         <Routes>
                             <Route element={<Layout />}>
+                                <Route path="/search" element={<SearchPage />} />
+
                                 <Route path="/profile/:userId?" element={<ProfilePage />} />
                                 <Route path="/edit-profile" element={<EditProfilePage />} />
                                 <Route path="/" element={<MainPage />} />

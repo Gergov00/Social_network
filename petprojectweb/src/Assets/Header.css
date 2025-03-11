@@ -40,3 +40,19 @@
             border-radius: 4px;
             outline: none;
         }
+        .mini-bar .search-bar button {
+            padding: 5px 10px;
+            margin-left: 8px;
+            border: none;
+            border-radius: 4px;
+            background-color: #fff;
+            color: #4267B2;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            outline: none;
+        }
+
+            .mini-bar .search-bar button:hover {
+                background-color: #f0f0f0;
+            }
