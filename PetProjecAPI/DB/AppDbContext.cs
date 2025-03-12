@@ -16,6 +16,8 @@ namespace PetProjecAPI.DB
         public DbSet<Comment> Comments { get; set; }
         public DbSet<PostLike> PostLikes { get; set; }
         public DbSet<CommentLike> CommentLikes { get; set; }
+        public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<Message> Messages { get; set; }
 
         // Конфигурация моделей и связей между таблицами
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -51,6 +53,32 @@ namespace PetProjecAPI.DB
                 .HasMany(c => c.CommentLikes)
                 .WithOne(cl => cl.Comment)
                 .HasForeignKey(cl => cl.CommentId);
+
+            // Настройка для Friendship
+            modelBuilder.Entity<Friendship>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.Friendships) // добавьте коллекцию в User (см. ниже)
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Friendship>()
+                .HasOne(f => f.Friend)
+                .WithMany()
+                .HasForeignKey(f => f.FriendId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Настройка для Message
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany(u => u.SentMessages) // добавьте коллекцию в User
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+                .HasOne(m => m.Receiver)
+                .WithMany(u => u.ReceivedMessages) // добавьте коллекцию в User
+                .HasForeignKey(m => m.ReceiverId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

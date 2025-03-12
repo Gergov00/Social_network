@@ -1,7 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../Assets/ProfilePage.css';
-import { getUserPhotos, uploadUserPhoto, deletePhoto, getUserById } from '../Services/Api';
+import {
+    getUserPhotos,
+    uploadUserPhoto,
+    deletePhoto,
+    getUserById,
+    sendFriendRequest,
+    getFriendRequest,
+    cancelFriendRequest,
+    removeFriendship,
+    acceptFriendRequest
+} from '../Services/Api';
 import { useUser } from '../Context/UserContext';
 import PostsComponent from '../Components/PostsComponent';
 
@@ -19,12 +29,14 @@ const ProfilePage = () => {
     const [uploadLoading, setUploadLoading] = useState(false);
     const [uploadError, setUploadError] = useState(null);
 
+    // Состояние для запроса в друзья (если отправлен)
+    const [friendRequest, setFriendRequest] = useState(null);
+
     useEffect(() => {
         if (!currentUser) {
             navigate('/auth');
         }
     }, [currentUser, navigate]);
-
 
     useEffect(() => {
         if (routeUserId) {
@@ -32,10 +44,24 @@ const ProfilePage = () => {
                 .then(data => setProfileUser(data))
                 .catch(err => console.error(err));
         } else {
-            console.log(currentUser)
             setProfileUser(currentUser);
         }
     }, [routeUserId, currentUser]);
+
+    // Проверка, был ли уже отправлен запрос в друзья для профиля другого пользователя
+    useEffect(() => {
+        async function checkFriendRequest() {
+            try {
+                const req = await getFriendRequest(currentUser.id, profileUser.id);
+                setFriendRequest(req);
+            } catch (error) {
+                console.error("Ошибка проверки запроса в друзья:", error);
+            }
+        }
+        if (currentUser && profileUser && currentUser.id !== profileUser.id) {
+            checkFriendRequest();
+        }
+    }, [currentUser, profileUser]);
 
     useEffect(() => {
         if (activeTab === 'photos' && profileUser) {
@@ -79,10 +105,6 @@ const ProfilePage = () => {
         }
     };
 
-    if (!profileUser) {
-        return <p>Загрузка профиля...</p>;
-    }
-
     const handlePhotoDelete = async (photo) => {
         try {
             await deletePhoto(photo.id);
@@ -92,13 +114,53 @@ const ProfilePage = () => {
         }
     };
 
+    const handleAddFriend = async () => {
+        try {
+            const req = await sendFriendRequest(currentUser.id, profileUser.id);
+            setFriendRequest(req);
+            alert('Запрос в друзья отправлен');
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    const handleCancelRequest = async () => {
+        try {
+            await cancelFriendRequest(friendRequest.id);
+            setFriendRequest(null);
+            alert('Запрос отменен');
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    const handleRemoveFriend = async () => {
+        try {
+            await removeFriendship(friendRequest.id);
+            setFriendRequest(null);
+            alert('Друг удален');
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    const handleAcceptRequest = async () => {
+        try {
+            const accepted = await acceptFriendRequest(friendRequest.id);
+            setFriendRequest(accepted);
+            alert('Запрос принят');
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
     const renderContent = () => {
         switch (activeTab) {
             case 'about':
                 return (
                     <>
                         <h2>О себе</h2>
-                        <p>{profileUser.about || 'Информация отсутствует'}</p>
+                        <p>{profileUser?.about || 'Информация отсутствует'}</p>
                     </>
                 );
             case 'photos':
@@ -129,7 +191,6 @@ const ProfilePage = () => {
                     </>
                 );
             case 'posts':
-
                 return <PostsComponent userId={profileUser.id} />;
             default:
                 return null;
@@ -140,21 +201,49 @@ const ProfilePage = () => {
         <div className="profile-container">
             <div className="profile-cover">
                 <img
-                    src={profileUser.coverURL || 'https://sun9-33.userapi.com/impf/Ce-dT6lYDP47lpGzYqYOc0gq6ymBwiQrs9mXQw/UY7k4fz4OA0.jpg?size=1080x540&quality=96&crop=0,282,1080,540&sign=946773e0bd7b110559a5be6d138955ae&c_uniq_tag=C8OiUIWg_d6fe85Csb3efUS3CWNvKXmzv5ZsLqQ9ghM&type=helpers'}
+                    src={profileUser?.coverURL || 'https://sun9-33.userapi.com/impf/Ce-dT6lYDP47lpGzYqYOc0gq6ymBwiQrs9mXQw/UY7k4fz4OA0.jpg?size=1080x540&quality=96&crop=0,282,1080,540&sign=946773e0bd7b110559a5be6d138955ae&c_uniq_tag=C8OiUIWg_d6fe85Csb3efUS3CWNvKXmzv5ZsLqQ9ghM&type=helpers'}
                     alt="Cover"
                     className="cover-photo"
                 />
             </div>
             <div className="profile-info">
                 <div className="avatar-profile">
-                    <img src={profileUser.avatarURL} alt="Avatar" />
+                    <img src={profileUser?.avatarURL} alt="Avatar" />
                 </div>
                 <div className="user-details">
-                    <h1>{profileUser.firstName} {profileUser.lastName}</h1>
-                    {currentUser?.id === profileUser.id && (
+                    <h1>{profileUser?.firstName} {profileUser?.lastName}</h1>
+                    {currentUser?.id === profileUser?.id ? (
                         <>
                             <button onClick={() => navigate('/edit-profile')}>Редактировать профиль</button>
                             <button onClick={handleLogout} style={{ marginLeft: '10px' }}>Выйти</button>
+                        </>
+                    ) : (
+                        <>
+                            <button onClick={() => navigate(`/chat/${profileUser.id}`)}>Написать сообщение</button>
+                            {friendRequest ? (
+                                friendRequest.status === "accepted" ? (
+                                    <button onClick={handleRemoveFriend} style={{ marginLeft: '10px' }}>
+                                        Удалить из друзей
+                                    </button>
+                                    ) : (
+                                        <>
+                                            {currentUser.id === friendRequest.UserId ? (
+                                                <button onClick={handleCancelRequest} style={{ marginLeft: '10px' }}>
+                                                    Отменить заявку
+                                                </button>
+                                            ) : (
+                                                <button onClick={handleAcceptRequest} style={{ marginLeft: '10px' }}>
+                                                    Принять заявку
+                                                </button>
+                                            )}
+                                        </>
+                                    )
+                                
+                            ) : (
+                                <button onClick={handleAddFriend} style={{ marginLeft: '10px' }}>
+                                    Добавить в друзья
+                                </button>
+                            )}
                         </>
                     )}
                 </div>

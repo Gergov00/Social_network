@@ -16,6 +16,9 @@
         public ICollection<Comment>? Comments { get; set; }
         public ICollection<PostLike>? PostLikes { get; set; }
         public ICollection<CommentLike>? CommentLikes { get; set; }
+        public ICollection<Friendship>? Friendships { get; set; }
+        public ICollection<Message>? SentMessages { get; set; }
+        public ICollection<Message>? ReceivedMessages { get; set; }
     }
 
 
@@ -29,6 +32,7 @@
         public string? About { get; set; }
         public bool RemoveAvatar { get; set; }
         public bool RemoveCover { get; set; }
+
     }
 
 }
