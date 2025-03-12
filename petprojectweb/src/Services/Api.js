@@ -1,5 +1,5 @@
 
-const API_BASE_URL = 'https://localhost:32771/api';
+const API_BASE_URL = 'https://localhost:32773/api';
 
 export async function login(email, password) {
     const response = await fetch(`${API_BASE_URL}/Auth/login`, {
@@ -259,4 +259,96 @@ export async function searchUsers(query) {
         throw new Error(errorData.message || 'Ошибка поиска пользователей');
     }
     return await response.json();
+}
+
+
+
+export async function sendFriendRequest(userId, friendId) {
+    const response = await fetch(`${API_BASE_URL}/Friendships/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, friendId })
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка отправки запроса в друзья');
+    }
+    return await response.json();
+}
+
+export async function sendMessage(senderId, receiverId, content) {
+    const response = await fetch(`${API_BASE_URL}/Messages/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ senderId, receiverId, content })
+    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка отправки сообщения');
+    }
+    return await response.json();
+}
+
+export async function getConversation(userId, friendId) {
+    const response = await fetch(`${API_BASE_URL}/Messages/conversation?userId=${userId}&friendId=${friendId}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка получения переписки');
+    }
+    return await response.json();
+}
+
+export async function getFriendRequests(userId) {
+    const response = await fetch(`${API_BASE_URL}/Friendships/${userId}`)
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка получения запросов');
+    }
+    return await response.json();
+}
+
+export async function acceptFriendRequest(id) {
+    console.log(id);
+    const response = await fetch(`${API_BASE_URL}/Friendships/accept/${id}`, {
+        method: 'POST',
+    });
+    if (!response.ok) {
+        const errorData = await response
+        throw new Error(errorData.message || 'Ошибка принятие запроса');
+    }
+    return await response.json();
+}
+
+
+export async function getFriendRequest(userId, friendId) {
+    const response = await fetch(`${API_BASE_URL}/Friendships/check?senderId=${userId}&receiverId=${friendId}`);
+    if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Ошибка получения запросов');
+    }
+    const text = await response.text();
+    return text ? JSON.parse(text) : null;
+}
+
+
+export async function cancelFriendRequest(id) {
+    const response = await fetch(`${API_BASE_URL}/Friendships/remove/${id}`, {
+        method: 'DELETE',
+    })
+    if (!response.ok) {
+        const errorData = await response;
+        throw new Error(errorData.message || 'Ошибка получения запросов');
+    }
+    return await response;
+}
+
+export async function removeFriendship(id) {
+    const response = await fetch(`${API_BASE_URL}/Friendships/remove/${id}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        const errorData = await response;
+        throw new Error(errorData.message || 'Ошибка удаления дружбы');
+    }
+    return await response;
 }

@@ -56,3 +56,66 @@
             .mini-bar .search-bar button:hover {
                 background-color: #f0f0f0;
             }
+
+.notifications-container {
+    position: relative;
+    margin-left: 20px;
+}
+
+.notifications-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    position: relative;
+}
+
+.notification-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+}
+
+.notifications-dropdown {
+    position: absolute;
+    right: 0;
+    top: 30px;
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    width: 250px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    z-index: 100;
+}
+
+.notification-item {
+    border-bottom: 1px solid #eee;
+    padding: 5px 0;
+}
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-item p {
+        margin: 0 0 5px;
+        font-size: 14px;
+    }
+
+    .notification-item button {
+        background-color: #4267B2;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+    }

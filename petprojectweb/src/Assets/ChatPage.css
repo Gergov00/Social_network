@@ -1,0 +1,73 @@
+.chat - container {
+    max - width: 800px;
+    margin: 20px auto;
+    border: 1px solid #ddd;
+    border - radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex - direction: column;
+    background: #fff;
+}
+
+.messages - container {
+    flex: 1;
+    padding: 20px;
+    overflow - y: auto;
+    background: #f9f9f9;
+}
+
+.message {
+    max - width: 70 %;
+    margin - bottom: 10px;
+    padding: 10px;
+    border - radius: 10px;
+    position: relative;
+    font - size: 14px;
+}
+
+.message.sent {
+    background: #d1ffd6;
+    align - self: flex - end;
+}
+
+.message.received {
+    background: #fff;
+    align - self: flex - start;
+    border: 1px solid #ddd;
+}
+
+.message p {
+    margin: 0;
+}
+
+.message span {
+    font - size: 10px;
+    position: absolute;
+    bottom: 2px;
+    right: 5px;
+    color: #666;
+}
+
+.chat - input - container {
+    display: flex;
+    padding: 10px;
+    border - top: 1px solid #ddd;
+}
+
+.chat - input - container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border - radius: 4px;
+    outline: none;
+}
+
+.chat - input - container button {
+    margin - left: 10px;
+    padding: 10px 20px;
+    border: none;
+    background - color: #4267B2;
+    color: white;
+    border - radius: 4px;
+    cursor: pointer;
+}
