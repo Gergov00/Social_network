@@ -62,7 +62,8 @@ namespace PetProjecAPI.Controllers
             };
 
             // Отправляем уведомление всем подключенным клиентам через SignalR
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notification);
+            await _hubContext.Clients.User(friendship.FriendId.ToString())
+                .SendAsync("ReceiveNotification", notification);
 
             return Ok(friendship);
         }
@@ -77,17 +78,19 @@ namespace PetProjecAPI.Controllers
             friendship.Status = "accepted";
             await _context.SaveChangesAsync();
 
-            // Формируем уведомление о принятии запроса
             var notification = new
             {
                 Id = friendship.Id,
-                UserId = friendship.FriendId, // Тот, кто принял запрос
-                FrinedId = friendship.UserId,
+                UserId = friendship.UserId,
+                FrinedId = friendship.FriendId,
                 Message = "Ваш запрос в друзья принят",
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Status = "accepted"
             };
 
-            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notification);
+            await _hubContext.Clients.User(friendship.UserId.ToString())
+                .SendAsync("ReceiveNotification", notification);
+
 
             return Ok(friendship);
         }

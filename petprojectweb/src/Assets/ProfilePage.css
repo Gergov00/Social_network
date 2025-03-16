@@ -30,7 +30,7 @@ html, body {
 .profile-info {
     position: relative;
     padding: 0 20px;
-    margin-top: -70px; 
+    margin-top: -70px;
     display: flex;
     align-items: center;
 }
@@ -120,3 +120,36 @@ html, body {
     max-height: 600px;
     max-width: 600px;
 }
+
+.user-details button {
+    background-color: #4a76a8; /* базовый синий цвет */
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin: 5px;
+}
+
+    /* Эффект наведения */
+    .user-details button:hover {
+        background-color: #3a5a8c;
+        transform: translateY(-2px);
+    }
+
+    /* Фокус */
+    .user-details button:focus {
+        outline: none;
+        box-shadow: 0 0 5px rgba(74, 118, 168, 0.8);
+    }
+
+    /* Дополнительный стиль для кнопок с "secondary" оформлением (если нужно) */
+    .user-details button.btn-secondary {
+        background-color: #888;
+    }
+
+        .user-details button.btn-secondary:hover {
+            background-color: #666;
+        }
