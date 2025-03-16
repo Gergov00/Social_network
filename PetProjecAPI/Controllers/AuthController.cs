@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PetProjecAPI.DB;
-using Microsoft.Extensions.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -98,7 +97,9 @@ namespace PetProjecAPI.Controllers
                     user.FirstName,
                     user.LastName,
                     user.Email,
-                    user.AvatarURL
+                    user.AvatarURL,
+                    user.About,
+                    user.CoverURL
                 }
             });
         }

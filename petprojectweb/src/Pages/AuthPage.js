@@ -61,9 +61,8 @@ const AuthPage = () => {
         setLoginError(null);
         try {
             const data = await login(loginEmail, loginPassword);
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("user", JSON.stringify(data.user));
-            loginUser(data.user);
+            
+            loginUser(data);
             navigate('/profile');
         } catch (err) {
             console.error(err);

@@ -6,7 +6,7 @@ import { useUser } from '../Context/UserContext';
 
 const EditProfilePage = () => {
     const navigate = useNavigate();
-    const { user, loginUser } = useUser();
+    const { user, updateUser } = useUser();
 
     useEffect(() => {
         if (!user) {
@@ -24,6 +24,7 @@ const EditProfilePage = () => {
     const [removeAvatar, setRemoveAvatar] = useState(false);
     const [removeCover, setRemoveCover] = useState(false);
     const [error, setError] = useState('');
+
 
     const handleAvatarChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -68,8 +69,10 @@ const EditProfilePage = () => {
                 removeAvatar,
                 removeCover
             );
-            localStorage.setItem("user", JSON.stringify(updatedUser));
-            loginUser(updatedUser);
+            console.log(updatedUser);
+            localStorage.setItem("user", updatedUser);
+            updateUser(updatedUser);
+            console.log(localStorage.getItem("user"));
             navigate('/profile');
         } catch (err) {
             setError(err.message);
@@ -117,7 +120,7 @@ const EditProfilePage = () => {
                         <div>
                             <p>Предпросмотр аватарки:</p>
                             <img src={previewAvatar} alt="PreviewAvatar" style={{ width: '100px', height: '100px' }} />
-                            <button type="button" onClick={handleRemoveAvatar}>Удалить аватарку</button>
+                            {previewAvatar !== "http://gergovzaurbek.online/images/default-avatar.png" ? <button type="button" onClick={handleRemoveAvatar}>Удалить аватарку</button> : ''}
                         </div>
                     ) : (
                         removeAvatar && <p>Аватарка будет удалена</p>
