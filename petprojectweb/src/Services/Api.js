@@ -1,5 +1,6 @@
 
-const API_BASE_URL = 'https://localhost:32773/api';
+//const API_BASE_URL = 'http://gergovzaurbek.online/api';
+const API_BASE_URL = 'https://localhost:32769/api';
 
 export async function login(email, password) {
     const response = await fetch(`${API_BASE_URL}/Auth/login`, {

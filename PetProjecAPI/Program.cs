@@ -1,5 +1,6 @@
 using PetProjecAPI.DB;
 using Microsoft.EntityFrameworkCore;
+using PetProjecAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,15 +11,18 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowClientOrigin", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://www.gergovzaurbek.online", "http://gergovzaurbek.online", "http://localhost:3000")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -34,5 +38,7 @@ app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationsHub>("/notificationsHub");
 
 app.Run();
