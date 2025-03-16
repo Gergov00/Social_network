@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Assets/Header.css';
-import { getFriendRequests, acceptFriendRequest } from '../Services/Api';
 import { useUser } from '../Context/UserContext';
+import Notification from './Notification';
+
 
 const Header = () => {
     const navigate = useNavigate();
     const { user } = useUser();
     const [activeMenu, setActiveMenu] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    const [showNotifications, setShowNotifications] = useState(false);
-    const [friendRequests, setFriendRequests] = useState([]);
 
     const handleMenuClick = (menuItem) => {
         setActiveMenu(menuItem);
@@ -32,34 +31,9 @@ const Header = () => {
         }
     };
 
-    const toggleNotifications = () => {
-        setShowNotifications(!showNotifications);
-    };
 
-    useEffect(() => {
-        // Получаем запросы в друзья для текущего пользователя
-        async function fetchFriendRequests() {
-            try {
-                const requests = await getFriendRequests(user.id);
-                setFriendRequests(requests);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-        if (user) {
-            fetchFriendRequests();
-        }
-    }, [user]);
 
-    const handleAcceptRequest = async (requestId) => {
-        try {
-            await acceptFriendRequest(requestId);
-            // Удаляем принятый запрос из списка
-            setFriendRequests(friendRequests.filter(req => req.id !== requestId));
-        } catch (error) {
-            console.error(error);
-        }
-    };
+
 
     return (
         <header className="mini-bar">
@@ -85,28 +59,10 @@ const Header = () => {
                     <button type="submit">Найти</button>
                 </form>
             </div>
-            <div className="notifications-container">
-                <button className="notifications-button" onClick={toggleNotifications}>
-                    🔔
-                    {friendRequests.length > 0 && (
-                        <span className="notification-count">{friendRequests.length}</span>
-                    )}
-                </button>
-                {showNotifications && (
-                    <div className="notifications-dropdown">
-                        {friendRequests.length === 0 ? (
-                            <p>Нет новых запросов</p>
-                        ) : (
-                            friendRequests.map(req => (
-                                <div key={req.id} className="notification-item">
-                                    <p>{req.senderFirstName} {req.senderLastName} хочет добавить вас в друзья</p>
-                                    <button onClick={() => handleAcceptRequest(req.id)}>Принять</button>
-                                </div>
-                            ))
-                        )}
-                    </div>
-                )}
-            </div>
+          
+            <Notification userId={user?.id} />
+                
+            
         </header>
     );
 };

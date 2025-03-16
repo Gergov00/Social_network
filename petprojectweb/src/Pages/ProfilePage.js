@@ -29,10 +29,10 @@ const ProfilePage = () => {
     const [uploadLoading, setUploadLoading] = useState(false);
     const [uploadError, setUploadError] = useState(null);
 
-    // Состояние для запроса в друзья (если отправлен)
     const [friendRequest, setFriendRequest] = useState(null);
 
     useEffect(() => {
+        console.log(currentUser);
         if (!currentUser) {
             navigate('/auth');
         }
@@ -53,6 +53,7 @@ const ProfilePage = () => {
         async function checkFriendRequest() {
             try {
                 const req = await getFriendRequest(currentUser.id, profileUser.id);
+                console.log(req)
                 setFriendRequest(req);
             } catch (error) {
                 console.error("Ошибка проверки запроса в друзья:", error);
@@ -118,7 +119,6 @@ const ProfilePage = () => {
         try {
             const req = await sendFriendRequest(currentUser.id, profileUser.id);
             setFriendRequest(req);
-            alert('Запрос в друзья отправлен');
         } catch (error) {
             alert(error.message);
         }
@@ -128,7 +128,6 @@ const ProfilePage = () => {
         try {
             await cancelFriendRequest(friendRequest.id);
             setFriendRequest(null);
-            alert('Запрос отменен');
         } catch (error) {
             alert(error.message);
         }
@@ -138,7 +137,6 @@ const ProfilePage = () => {
         try {
             await removeFriendship(friendRequest.id);
             setFriendRequest(null);
-            alert('Друг удален');
         } catch (error) {
             alert(error.message);
         }
@@ -148,7 +146,6 @@ const ProfilePage = () => {
         try {
             const accepted = await acceptFriendRequest(friendRequest.id);
             setFriendRequest(accepted);
-            alert('Запрос принят');
         } catch (error) {
             alert(error.message);
         }
@@ -227,7 +224,7 @@ const ProfilePage = () => {
                                     </button>
                                     ) : (
                                         <>
-                                            {currentUser.id === friendRequest.UserId ? (
+                                            {currentUser.id === friendRequest.userId ? (
                                                 <button onClick={handleCancelRequest} style={{ marginLeft: '10px' }}>
                                                     Отменить заявку
                                                 </button>

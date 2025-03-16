@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PetProjecAPI.DB;
+using PetProjecAPI.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace PetProjecAPI.Controllers
 {
@@ -9,10 +11,12 @@ namespace PetProjecAPI.Controllers
     public class FriendshipsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IHubContext<NotificationsHub> _hubContext;
 
-        public FriendshipsController(AppDbContext context)
+        public FriendshipsController(AppDbContext context, IHubContext<NotificationsHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         [HttpGet("{friendId}")]
@@ -29,14 +33,11 @@ namespace PetProjecAPI.Controllers
         public async Task<IActionResult> CheckFriendRequest([FromQuery] int senderId, [FromQuery] int receiverId)
         {
             var request = await _context.Friendships
-                .FirstOrDefaultAsync(f => ((f.UserId == senderId
-                                       && f.FriendId == receiverId)
-                                       || (f.UserId == receiverId
-                                       && f.FriendId == senderId))
-                                       && (f.Status == "pending" || f.Status == "accepted"));
+                .FirstOrDefaultAsync(f => ((f.UserId == senderId && f.FriendId == receiverId)
+                                           || (f.UserId == receiverId && f.FriendId == senderId))
+                                           && (f.Status == "pending" || f.Status == "accepted"));
             return Ok(request);
         }
-
 
         [HttpPost("send")]
         public async Task<ActionResult> SendFriendRequest([FromBody] Friendship friendship)
@@ -49,6 +50,20 @@ namespace PetProjecAPI.Controllers
 
             _context.Friendships.Add(friendship);
             await _context.SaveChangesAsync();
+
+
+            var notification = new
+            {
+                Id = friendship.Id,
+                UserId = friendship.UserId,
+                FriendId = friendship.FriendId,
+                Message = "Новый запрос в друзья",
+                CreatedAt = friendship.CreatedAt
+            };
+
+            // Отправляем уведомление всем подключенным клиентам через SignalR
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notification);
+
             return Ok(friendship);
         }
 
@@ -61,6 +76,19 @@ namespace PetProjecAPI.Controllers
 
             friendship.Status = "accepted";
             await _context.SaveChangesAsync();
+
+            // Формируем уведомление о принятии запроса
+            var notification = new
+            {
+                Id = friendship.Id,
+                UserId = friendship.FriendId, // Тот, кто принял запрос
+                FrinedId = friendship.UserId,
+                Message = "Ваш запрос в друзья принят",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            await _hubContext.Clients.All.SendAsync("ReceiveNotification", notification);
+
             return Ok(friendship);
         }
 
@@ -73,6 +101,11 @@ namespace PetProjecAPI.Controllers
 
             _context.Friendships.Remove(friendship);
             await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.All
+                .SendAsync("ReceiveCancelNotification", new { Id = friendship.Id, Message = "Запрос в друзья отменен" });
+
+
             return NoContent();
         }
     }
