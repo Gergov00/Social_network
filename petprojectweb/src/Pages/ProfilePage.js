@@ -44,6 +44,7 @@ const ProfilePage = () => {
                 .then(data => setProfileUser(data))
                 .catch(err => console.error(err));
         } else {
+            console.log(currentUser);
             setProfileUser(currentUser);
         }
     }, [routeUserId, currentUser]);

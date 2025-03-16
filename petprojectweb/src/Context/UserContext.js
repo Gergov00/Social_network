@@ -12,19 +12,27 @@ export const UserProvider = ({ children }) => {
         }
     }, []);
 
-    const loginUser = (userData) => {
-        setUser(userData);
-        localStorage.setItem("user", JSON.stringify(userData));
+    const loginUser = (data) => {
+        setUser(data.user);
+
+        localStorage.setItem("token", data.token)
+        localStorage.setItem("user", JSON.stringify(data.user));
     };
 
     const logoutUser = () => {
         setUser(null);
+
         localStorage.removeItem("user");
         localStorage.removeItem("token");
     };
 
+    const updateUser = (user) => {
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
+    };
+
     return (
-        <UserContext.Provider value={{ user, loginUser, logoutUser }}>
+        <UserContext.Provider value={{ user, loginUser, logoutUser, updateUser }}>
             {children}
         </UserContext.Provider>
     );
