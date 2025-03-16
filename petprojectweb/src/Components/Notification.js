@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import * as signalR from '@microsoft/signalr';
+import useNotifications from '../Hooks/useNotifications';
 import NotificationItem from './NotificationItem';
 import '../Assets/Notification.css';
 import { acceptFriendRequest, getFriendRequests } from '../Services/Api';
+import { useUser } from '../Context/UserContext'
 
 
 const Notification = ({ userId }) => {
+    const {token } = useUser();
     const [notifications, setNotifications] = useState([]);
     const [showNotifications, setShowNotifications] = useState(false);
 
 
     useEffect(() => {
-        // Получаем запросы в друзья для текущего пользователя
         async function fetchFriendRequests() {
             try {
                 const requests = await getFriendRequests(userId);
@@ -26,40 +27,18 @@ const Notification = ({ userId }) => {
 
     }, [userId]);
 
-    useEffect(() => {
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl('https://localhost:32769/notificationsHub')
-            .withAutomaticReconnect()
-            .build();
+    const handleReceiveNotification = (notification) => {
+        console.log(notification);
+        if (notification.message === 'Новый запрос в друзья') {
+            setNotifications(prev => [...prev, notification]);
+        }
+    };
 
-        connection.start()
-            .then(() => console.log('Соединение установлено' + new Date().toISOString()))
-            .catch(err => console.error('Ошибка подключения:', err + new Date().toISOString()));
-        connection.on('ReceiveNotification', (notification) => {
-            setNotifications(prev => {
-                const index = prev.findIndex(n => n.FriendId === notification.FriendId && n.UserId === notification.UserId);
-                if (index !== -1) {
-                    
-                    const newNotifications = [...prev];
-                    newNotifications[index] = notification;
-                    return newNotifications;
-                } else {
-                    return [...prev, notification];
-                }
-            });
-        });
+    const handleReceiveCancelNotification = (cancelInfo) => {
+        setNotifications(prev => prev.filter(n => n.id !== cancelInfo.id));
+    };
 
-        connection.on('ReceiveCancelNotification', (cancelInfo) => {
-            setNotifications(prev => {
-                console.log(prev);
-                return prev.filter(n => n.id !== cancelInfo.id)
-            });
-        });
-
-        return () => {
-            connection.stop();
-        };
-    }, []);
+    useNotifications(token, handleReceiveNotification, handleReceiveCancelNotification);
 
 
     const toggleNotifications = () => {
