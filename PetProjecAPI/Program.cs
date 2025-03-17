@@ -83,5 +83,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<NotificationsHub>("/notificationsHub");
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();

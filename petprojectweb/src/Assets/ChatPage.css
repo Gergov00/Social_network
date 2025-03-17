@@ -1,38 +1,38 @@
-.chat - container {
-    max - width: 800px;
+.chat-container {
+    max-width: 800px;
     margin: 20px auto;
     border: 1px solid #ddd;
-    border - radius: 8px;
+    border-radius: 8px;
     overflow: hidden;
     display: flex;
-    flex - direction: column;
+    flex-direction: column;
     background: #fff;
 }
 
-.messages - container {
+.messages-container {
     flex: 1;
     padding: 20px;
-    overflow - y: auto;
+    overflow-y: auto;
     background: #f9f9f9;
 }
 
 .message {
-    max - width: 70 %;
-    margin - bottom: 10px;
+    max-width: 70 %;
+    margin-bottom: 10px;
     padding: 10px;
-    border - radius: 10px;
+    border-radius: 10px;
     position: relative;
-    font - size: 14px;
+    font-size: 14px;
 }
 
 .message.sent {
     background: #d1ffd6;
-    align - self: flex - end;
+    align-self: flex - end;
 }
 
 .message.received {
     background: #fff;
-    align - self: flex - start;
+    align-self: flex-start;
     border: 1px solid #ddd;
 }
 
@@ -41,33 +41,33 @@
 }
 
 .message span {
-    font - size: 10px;
+    font-size: 10px;
     position: absolute;
     bottom: 2px;
     right: 5px;
     color: #666;
 }
 
-.chat - input - container {
+.chat-input-container {
     display: flex;
     padding: 10px;
-    border - top: 1px solid #ddd;
+    border-top: 1px solid #ddd;
 }
 
-.chat - input - container input {
+.chat-input-container input {
     flex: 1;
     padding: 10px;
     border: 1px solid #ddd;
-    border - radius: 4px;
+    border-radius: 4px;
     outline: none;
 }
 
-.chat - input - container button {
-    margin - left: 10px;
+.chat-input-container button {
+    margin-left: 10px;
     padding: 10px 20px;
     border: none;
-    background - color: #4267B2;
+    background-color: #4267B2;
     color: white;
-    border - radius: 4px;
+    border-radius: 4px;
     cursor: pointer;
 }
