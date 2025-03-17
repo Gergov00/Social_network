@@ -11,6 +11,10 @@
     padding: 10px;
 }
 
+.notifications-dropdown p {
+    color: black;
+}
+
 .notification-item {
     display: flex;
     align-items: center;

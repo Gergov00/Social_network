@@ -61,6 +61,9 @@ namespace PetProjecAPI.Controllers
                 CreatedAt = friendship.CreatedAt
             };
 
+            Console.WriteLine($"Отправка уведомления для пользователя {friendship.FriendId}");
+
+
             // Отправляем уведомление всем подключенным клиентам через SignalR
             await _hubContext.Clients.User(friendship.FriendId.ToString())
                 .SendAsync("ReceiveNotification", notification);
@@ -82,14 +85,27 @@ namespace PetProjecAPI.Controllers
             {
                 Id = friendship.Id,
                 UserId = friendship.UserId,
-                FrinedId = friendship.FriendId,
+                FriendId = friendship.FriendId,
                 Message = "Ваш запрос в друзья принят",
+                CreatedAt = DateTime.UtcNow,
+                Status = "accepted"
+            };
+
+            var notification2 = new
+            {
+                Id = friendship.Id,
+                UserId = friendship.UserId,
+                FriendId = friendship.FriendId,
+                Message = "Вы приняли запрос в друзья",
                 CreatedAt = DateTime.UtcNow,
                 Status = "accepted"
             };
 
             await _hubContext.Clients.User(friendship.UserId.ToString())
                 .SendAsync("ReceiveNotification", notification);
+            await _hubContext.Clients.User(friendship.FriendId.ToString())
+                .SendAsync("ReceiveNotification", notification2);
+
 
 
             return Ok(friendship);
@@ -105,11 +121,27 @@ namespace PetProjecAPI.Controllers
             _context.Friendships.Remove(friendship);
             await _context.SaveChangesAsync();
 
-            await _hubContext.Clients.All
+            await _hubContext.Clients.User(friendship.FriendId.ToString())
                 .SendAsync("ReceiveCancelNotification", new { Id = friendship.Id, Message = "Запрос в друзья отменен" });
 
 
             return NoContent();
+        }
+
+        [HttpGet("friends")]
+        public async Task<ActionResult<IEnumerable<User>>> GetFriends([FromQuery] int userId)
+        {
+            var friendships = await _context.Friendships
+                .Where(f => (f.UserId == userId || f.FriendId == userId) && f.Status == "accepted")
+                .ToListAsync();
+
+            var friendIds = friendships.Select(f => f.UserId == userId ? f.FriendId : f.UserId).Distinct();
+
+            var friends = await _context.Users
+                .Where(u => friendIds.Contains(u.Id))
+                .ToListAsync();
+
+            return Ok(friends);
         }
     }
 }

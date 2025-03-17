@@ -1,5 +1,7 @@
 ﻿
 
+using System.Text.Json.Serialization;
+
 namespace PetProjecAPI.DB
 {
     public class Friendship
@@ -8,11 +10,13 @@ namespace PetProjecAPI.DB
         public int UserId { get; set; }      
         public int FriendId { get; set; }    
         public DateTime? CreatedAt { get; set; }
-        public string? Status { get; set; }  
+        public string? Status { get; set; }
 
 
 
+        [JsonIgnore]  
         public User? User { get; set; }
+        [JsonIgnore]
         public User? Friend { get; set; }
     }
 }

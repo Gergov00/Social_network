@@ -185,7 +185,6 @@ export const Post = ({ post, onUpdate }) => {
                 return;
             }
             const newLike = await putLikeOnPost(post.id, user.id, new Date().toISOString());
-            console.log(newLike);
             const updatedLikes = [...postLikes, newLike];
             setPostLikes(updatedLikes);
             const updatedPost = { ...post, postLikes: updatedLikes };
