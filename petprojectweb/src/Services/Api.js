@@ -360,3 +360,13 @@ export async function getFriends(userId) {
     }
     return await response.json();
 }
+
+
+export async function getChats(userId) {
+    const response = await fetch(`${API_BASE_URL}/Messages/chats?userId=${userId}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка загрузки чатов');
+    }
+    return await response.json();
+}
