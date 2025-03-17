@@ -69,10 +69,8 @@ const EditProfilePage = () => {
                 removeAvatar,
                 removeCover
             );
-            console.log(updatedUser);
             localStorage.setItem("user", updatedUser);
             updateUser(updatedUser);
-            console.log(localStorage.getItem("user"));
             navigate('/profile');
         } catch (err) {
             setError(err.message);

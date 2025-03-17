@@ -28,7 +28,6 @@ const Notification = ({ userId }) => {
     }, [userId]);
 
     const handleReceiveNotification = (notification) => {
-        console.log(notification);
         if (notification.message === 'Новый запрос в друзья') {
             setNotifications(prev => [...prev, notification]);
         }
@@ -66,7 +65,7 @@ const Notification = ({ userId }) => {
                 </button>
                 {showNotifications && (
                     <div className="notifications-dropdown">
-            {notifications?.length === 0 && <p>Нет новых уведомлений</p>}
+                    {(notifications?.length === 0 || !notifications) && <p>Нет новых уведомлений</p>}
             {notifications ? notifications.map(notification => (
                 <NotificationItem
                     key={notification.Id}

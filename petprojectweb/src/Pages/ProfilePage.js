@@ -48,19 +48,39 @@ const ProfilePage = () => {
         }
     }, [currentUser, profileUser]);
 
-    // Подписка на уведомления через SignalR
-    useNotifications(token, (notification) => {
+
+    const acceptOrSendReq = (notification) => {
         // Если уведомление означает, что заявка принята,
         // и текущий пользователь (отправитель) соответствует тому, кому адресовано уведомление (FriendId),
         // обновляем состояние friendRequest.
-        console.log(notification);
+
+
+
         if (
-            notification.message === 'Ваш запрос в друзья принят' &&
+            (notification.message === 'Ваш запрос в друзья принят') &&
             currentUser.id.toString() === notification.userId.toString()
         ) {
             setFriendRequest(notification);
+            return;
         }
-    });
+        if ((notification.message === 'Новый запрос в друзья' || notification.message === 'Вы приняли запрос в друзья') &&
+            currentUser.id.toString() === notification.friendId.toString()
+        ) {
+            setFriendRequest(notification);
+        }
+
+    }
+
+    const cancelOrDlete = (notification) => {
+        if (notification.message === 'Запрос в друзья отменен') {
+            setFriendRequest(null);
+        }
+    }
+
+
+    // Подписка на уведомления через SignalR
+    useNotifications(token, acceptOrSendReq, cancelOrDlete);
+
 
     // Обработчики для запросов в друзья
     const handleAddFriend = async () => {

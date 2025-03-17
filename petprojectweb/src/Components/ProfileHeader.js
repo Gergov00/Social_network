@@ -1,5 +1,4 @@
-// src/Components/ProfileHeader.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Assets/ProfilePage.css';
 
@@ -14,6 +13,9 @@ const ProfileHeader = ({
     onLogout,
 }) => {
     const navigate = useNavigate();
+    useEffect(() => {
+
+    }, [friendRequest])
 
     return (
         <>

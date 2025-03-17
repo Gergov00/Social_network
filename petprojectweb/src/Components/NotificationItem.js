@@ -8,7 +8,6 @@ const NotificationItem = ({ request, onAccept }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log(request);
         getUserById(request.userId)
             .then(data => setSender(data))
             .catch(err => console.error('Ошибка получения данных пользователя:', err));

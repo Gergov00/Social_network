@@ -134,7 +134,6 @@ export async function getUserPhotos(userId) {
         throw new Error('Ошибка загрузки фотографий');
     }
     const data = await response.json();
-    console.log(response);
     return data.map(photo => ({
         id: photo.id,
         url: photo.photoURL,
@@ -176,7 +175,6 @@ export async function createPost(post, file) {
     formData.append("createdAt", post.createdAt);
     
     formData.append("file", file);
-    console.log(file);
 
     const response = await fetch(`${API_BASE_URL}/Posts/create`, {
         method: 'POST',
@@ -309,7 +307,6 @@ export async function getFriendRequests(userId) {
 }
 
 export async function acceptFriendRequest(id) {
-    console.log(id);
     const response = await fetch(`${API_BASE_URL}/Friendships/accept/${id}`, {
         method: 'POST',
     });
@@ -352,4 +349,14 @@ export async function removeFriendship(id) {
         throw new Error(errorData.message || 'Ошибка удаления дружбы');
     }
     return await response;
+}
+
+
+export async function getFriends(userId) {
+    const response = await fetch(`${API_BASE_URL}/Friendships/friends?userId=${userId}`);
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Ошибка загрузки друзей');
+    }
+    return await response.json();
 }
