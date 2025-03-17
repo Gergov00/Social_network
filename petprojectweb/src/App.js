@@ -11,6 +11,7 @@ const MainPage = lazy(() => import('./Pages/MainPage'));
 const NewsFeedPage = lazy(() => import('./Pages/NewsFeedPage'));
 const SearchPage = lazy(() => import('./Pages/SearchPage'));
 const FriendsPage = lazy(() => import('./Pages/FriendsPage'))
+const ChatPage = lazy(() => import('./Pages/ChatPage'))
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                                 <Route path="/search" element={<SearchPage />} />
                                 <Route path="/friends" element={<FriendsPage/> }/>
                                 <Route path="/profile/:userId?" element={<ProfilePage />} />
+                                <Route path="/chat/:friendId?" element={<ChatPage />} />
                                 <Route path="/edit-profile" element={<EditProfilePage />} />
                                 <Route path="/" element={<MainPage />} />
                                 <Route path="/newsfeed" element={<NewsFeedPage />} />
