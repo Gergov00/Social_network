@@ -6,7 +6,10 @@ namespace PetProjecAPI.Providers
     {
         public string GetUserId(HubConnectionContext connection)
         {
-            return connection.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            var id = connection.User?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine($"Подключился пользователь с Id: {id}");
+            return id;
         }
+
     }
 }

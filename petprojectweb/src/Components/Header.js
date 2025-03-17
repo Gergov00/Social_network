@@ -22,6 +22,10 @@ const Header = () => {
         if (menuItem === 'news') {
             navigate('/newsfeed');
         }
+        if (menuItem === 'messages') {
+            navigate('/messages');
+        }
+        
     };
 
     const handleSearchSubmit = (e) => {
@@ -45,7 +49,7 @@ const Header = () => {
                     <li className={activeMenu === 'profile' ? 'active' : ''} onClick={() => handleMenuClick('profile')}>Профиль</li>
                     <li className={activeMenu === 'news' ? 'active' : ''} onClick={() => handleMenuClick('news')}>Новости</li>
                     <li className={activeMenu === 'friends' ? 'active' : ''} onClick={() => handleMenuClick('friends')}>Друзья</li>
-                    <li className={activeMenu === 'messege' ? 'active' : ''} onClick={() => handleMenuClick('messege')}>Сообщение</li>
+                    <li className={activeMenu === 'messege' ? 'active' : ''} onClick={() => handleMenuClick('messages')}>Сообщение</li>
                 </ul>
             </nav>
             <div className="search-bar">

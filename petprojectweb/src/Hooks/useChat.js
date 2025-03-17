@@ -19,7 +19,7 @@ const useChat = (token, onReceiveMessage) => {
             .catch(err => console.error('ChatHub connection error', err));
 
         connection.on('ReceiveMessage', (message) => {
-            console.log('Received message:', message);
+            console.log('Получено сообщение:', message);
             onReceiveMessage(message);
         });
 
