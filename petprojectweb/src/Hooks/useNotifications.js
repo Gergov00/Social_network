@@ -6,8 +6,12 @@ const useNotifications = (token, onReceiveNotification, onReceiveCancelNotificat
     useEffect(() => {
         if (!token) return;
         const connection = new signalR.HubConnectionBuilder()
+            //.withUrl('http://gergovzaurbek.online/notificationsHub', {
             .withUrl('https://localhost:32769/notificationsHub', {
                 accessTokenFactory: () => token,
+                fetchOptions: {
+                    credentials: 'omit'
+                }
             })
             .withAutomaticReconnect()
             .build();

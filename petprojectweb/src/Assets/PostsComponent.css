@@ -369,3 +369,196 @@ html, body {
         .new-comment button:hover {
             background-color: #365899;
         }
+
+@media (max-width: 1024px) {
+    .new-post-form {
+        padding: 12px;
+    }
+
+        .new-post-form textarea {
+            font-size: 13px;
+        }
+
+        .new-post-form button {
+            padding: 8px 14px;
+            font-size: 14px;
+        }
+
+    .post {
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    .post-header h3 {
+        font-size: 15px;
+    }
+
+    .post-header span {
+        font-size: 13px;
+    }
+
+    .post-content {
+        font-size: 14px;
+    }
+
+    .post-actions button {
+        font-size: 13px;
+    }
+
+    .post-actions span {
+        font-size: 13px;
+    }
+
+    .comment {
+        font-size: 13px;
+    }
+
+    .new-comment input {
+        font-size: 13px;
+    }
+
+    .new-comment button {
+        padding: 7px 12px;
+        font-size: 13px;
+    }
+}
+
+/* Для экранов до 768px (планшеты и небольшие экраны) */
+@media (max-width: 768px) {
+    .new-post-form {
+        padding: 10px;
+    }
+
+        .new-post-form textarea {
+            font-size: 12px;
+        }
+
+        .new-post-form button {
+            padding: 7px 12px;
+            font-size: 13px;
+        }
+
+    .post {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .post-header h3 {
+        font-size: 14px;
+    }
+
+    .post-header span {
+        font-size: 12px;
+    }
+
+    .post-content {
+        font-size: 13px;
+    }
+
+    .post-actions {
+        gap: 10px;
+    }
+
+        .post-actions button {
+            font-size: 12px;
+        }
+
+        .post-actions span {
+            font-size: 12px;
+        }
+
+    .comment {
+        font-size: 12px;
+    }
+
+    .comment-header span {
+        font-size: 12px;
+    }
+
+    .comment-actions button {
+        font-size: 12px;
+    }
+
+    .new-comment input {
+        font-size: 12px;
+    }
+
+    .new-comment button {
+        padding: 6px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Для очень маленьких экранов до 480px (смартфоны) */
+@media (max-width: 480px) {
+    .new-post-form {
+        padding: 8px;
+    }
+
+        .new-post-form textarea {
+            font-size: 11px;
+        }
+
+        .new-post-form button {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+    .post {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .post-header h3 {
+        font-size: 13px;
+    }
+
+    .post-header span {
+        font-size: 11px;
+    }
+
+    .post-content {
+        font-size: 12px;
+    }
+
+    .post-actions {
+        gap: 8px;
+    }
+
+        .post-actions button {
+            font-size: 11px;
+        }
+
+        .post-actions span {
+            font-size: 11px;
+        }
+
+    .comment {
+        font-size: 11px;
+    }
+
+    .comment-header span {
+        font-size: 11px;
+    }
+
+    .comment-actions button {
+        font-size: 11px;
+    }
+
+    .new-comment input {
+        font-size: 11px;
+        padding: 6px;
+    }
+
+    .new-comment button {
+        padding: 5px 8px;
+        font-size: 11px;
+    }
+
+    /* Адаптив для кнопки "Удалить" в постах и комментариях */
+    .post-actions button,
+    .comment-actions button,
+    .new-comment button {
+        padding: 5px 8px;
+    }
+}

@@ -1,0 +1,159 @@
+/* Base responsive стили */
+
+/* Для экранов до 1024px (например, планшеты в горизонтальной ориентации) */
+@media (max-width: 1024px) {
+    .mini-bar {
+        padding: 15px;
+    }
+
+        .mini-bar .menu li {
+            padding: 10px;
+            font-size: 18px;
+        }
+
+    .chat-container {
+        height: 75vh;
+    }
+}
+
+/* Для экранов до 768px (планшеты и небольшие экраны) */
+@media (max-width: 768px) {
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    /* Адаптация контейнеров страниц */
+    .friends-page,
+    .messages-page,
+    .newsfeed-page,
+    .profile-container,
+    .chat-container {
+        max-width: 100%;
+        margin: 0;
+        padding: 10px;
+    }
+
+    /* Шапка сайта (Header) */
+    .mini-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 10px;
+    }
+
+        .mini-bar .menu ul {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .mini-bar .menu li {
+            margin: 5px 0;
+        }
+
+        .mini-bar .search-bar {
+            margin: 10px 0 0 0;
+            width: 100%;
+        }
+
+    /* Чат */
+    .chat-container {
+        height: 100vh;
+        border-radius: 0;
+    }
+
+    .chat-header h2 {
+        font-size: 18px;
+    }
+
+    .chat-input-container input,
+    .chat-input-container button {
+        font-size: 16px;
+    }
+
+    /* Профиль */
+    .profile-cover {
+        height: 200px;
+    }
+
+    .avatar-profile {
+        width: 100px;
+        height: 100px;
+    }
+
+    .user-details h1 {
+        font-size: 20px;
+    }
+
+    .profile-content {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
+    }
+
+    .main-content {
+        padding: 0;
+    }
+
+    /* Посты и прочий контент */
+    .posts-component {
+        padding: 10px;
+    }
+
+    .new-post-form textarea {
+        font-size: 14px;
+        width: 100%;
+    }
+
+    .new-post-form button {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    /* Универсальные стили для кнопок, включая кнопку "Удалить" */
+    button {
+        padding: 10px 15px;
+        font-size: 16px;
+    }
+
+    /* Глобальное масштабирование изображений */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* Для очень маленьких экранов до 480px (смартфоны) */
+@media (max-width: 480px) {
+    .mini-bar h2 {
+        font-size: 20px;
+    }
+
+    .mini-bar .menu li {
+        font-size: 16px;
+    }
+
+    .chat-header h2 {
+        font-size: 16px;
+    }
+
+    .chat-input-container input,
+    .chat-input-container button {
+        font-size: 14px;
+    }
+
+    .user-details h1 {
+        font-size: 18px;
+    }
+
+    button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+}
