@@ -7,8 +7,12 @@ const useChat = (token, onReceiveMessage) => {
         if (!token) return;
 
         const connection = new signalR.HubConnectionBuilder()
+            //.withUrl('http://gergovzaurbek.online/chatHub', {
             .withUrl('https://localhost:32769/chatHub', {
                 accessTokenFactory: () => token,
+                fetchOptions: {
+                    credentials: 'omit'
+                }
             })
             .withAutomaticReconnect()
             .build();
