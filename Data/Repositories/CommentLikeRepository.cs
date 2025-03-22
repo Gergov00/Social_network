@@ -11,7 +11,6 @@ namespace Data.Repositories
         Task AddAsync(CommentLike commentLike);
         void Update(CommentLike commentLike);
         void Delete(CommentLike commentLike);
-        Task<bool> SaveChangesAsync();
     }
 
     public class CommentLikeRepository : ICommentLikeRepository
@@ -33,7 +32,6 @@ namespace Data.Repositories
             _context.CommentLikes.Update(commentLike);
         public void Delete(CommentLike commentLike) =>
             _context.CommentLikes.Remove(commentLike);
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
+ 
     }
 }

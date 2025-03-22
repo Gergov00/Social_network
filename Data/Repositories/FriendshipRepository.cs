@@ -11,7 +11,6 @@ namespace Data.Repositories
         Task AddAsync(Friendship friendship);
         void Update(Friendship friendship);
         void Delete(Friendship friendship);
-        Task<bool> SaveChangesAsync();
         Task<IEnumerable<User>> GetFriendsAsync(int userId);
     }
 
@@ -36,8 +35,7 @@ namespace Data.Repositories
             _context.Friendships.Update(friendship);
         public void Delete(Friendship friendship) =>
             _context.Friendships.Remove(friendship);
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
+ 
         public async Task<IEnumerable<User>> GetFriendsAsync(int userId)
         {
             var friendships = await _context.Friendships

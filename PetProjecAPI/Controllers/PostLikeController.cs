@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data;
+using Microsoft.AspNetCore.Mvc;
 using Data.Repositories;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -10,8 +11,9 @@ namespace PetProjecAPI.Controllers
 public class PostLikesController : ControllerBase
 {
     private readonly IPostLikeRepository _postLikeRepository;
+    private readonly IUnitOfWork _unitOfWorkl;
 
-    public PostLikesController(IPostLikeRepository postLikeRepository)
+    public PostLikesController(IPostLikeRepository postLikeRepository, IUnitOfWork unitOfWorkl)
     {
         _postLikeRepository = postLikeRepository;
     }
@@ -42,7 +44,7 @@ public class PostLikesController : ControllerBase
     public async Task<ActionResult<PostLike>> CreatePostLike([FromBody] PostLike postLike)
     {
         await _postLikeRepository.AddAsync(postLike);
-        await _postLikeRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return CreatedAtAction(nameof(GetPostLike), new { id = postLike.Id }, postLike);
     }
 
@@ -51,16 +53,10 @@ public class PostLikesController : ControllerBase
     {
         if (id != postLike.Id) return BadRequest("ID mismatch.");
         _postLikeRepository.Update(postLike);
-        try
-        {
-            await _postLikeRepository.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (await _postLikeRepository.GetByIdAsync(id) == null)
-                return NotFound();
-            throw;
-        }
+        
+            await _unitOfWorkl.SaveChangesAsync();
+        
+       
         return NoContent();
     }
 
@@ -70,7 +66,7 @@ public class PostLikesController : ControllerBase
         var postLike = await _postLikeRepository.GetByIdAsync(id);
         if (postLike == null) return NotFound();
         _postLikeRepository.Delete(postLike);
-        await _postLikeRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return NoContent();
     }
 }

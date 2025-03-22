@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data;
+using Microsoft.AspNetCore.Mvc;
 using Data.Repositories;
 using Domain.Entities;
 using PetProjecAPI.Hubs;
@@ -13,9 +14,11 @@ public class FriendshipsController : ControllerBase
 {
     private readonly IFriendshipRepository _friendshipRepository;
     private readonly IHubContext<NotificationsHub> _hubContext;
+    private readonly IUnitOfWork _unitOfWorkl;
 
-    public FriendshipsController(IFriendshipRepository friendshipRepository, IHubContext<NotificationsHub> hubContext)
+    public FriendshipsController(IUnitOfWork unitOfWork, IFriendshipRepository friendshipRepository, IHubContext<NotificationsHub> hubContext)
     {
+        _unitOfWorkl = unitOfWork;
         _friendshipRepository = friendshipRepository;
         _hubContext = hubContext;
     }
@@ -43,7 +46,7 @@ public class FriendshipsController : ControllerBase
         friendship.Status = "pending";
         friendship.CreatedAt = DateTime.UtcNow;
         await _friendshipRepository.AddAsync(friendship);
-        await _friendshipRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
 
         var notification = new
         {
@@ -67,7 +70,7 @@ public class FriendshipsController : ControllerBase
         if (friendship == null) return NotFound();
 
         friendship.Status = "accepted";
-        await _friendshipRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
 
         var notification = new
         {
@@ -104,7 +107,7 @@ public class FriendshipsController : ControllerBase
         if (friendship == null) return NotFound();
 
         _friendshipRepository.Delete(friendship);
-        await _friendshipRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
 
         await _hubContext.Clients.User(friendship.FriendId.ToString())
             .SendAsync("ReceiveCancelNotification", new { Id = friendship.Id, Message = "Запрос в друзья отменен" });

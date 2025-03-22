@@ -10,7 +10,6 @@ namespace Data.Repositories
         Task AddAsync(UserPhoto userPhoto);
         void Update(UserPhoto userPhoto);
         void Delete(UserPhoto userPhoto);
-        Task<bool> SaveChangesAsync();
     }
 
     public class UserPhotoRepository : IUserPhotoRepository
@@ -32,7 +31,6 @@ namespace Data.Repositories
             _context.UserPhotos.Update(userPhoto);
         public void Delete(UserPhoto userPhoto) =>
             _context.UserPhotos.Remove(userPhoto);
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
+     
     }
 }

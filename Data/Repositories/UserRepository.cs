@@ -11,7 +11,6 @@ namespace Data.Repositories
         Task AddAsync(User user);
         void Update(User user);
         void Delete(User user);
-        Task<bool> SaveChangesAsync();
         Task<IEnumerable<User>> SearchAsync(string query);
     }
 
@@ -34,8 +33,6 @@ namespace Data.Repositories
             _context.Users.Update(user);
         public void Delete(User user) =>
             _context.Users.Remove(user);
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
         public async Task<IEnumerable<User>> SearchAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))

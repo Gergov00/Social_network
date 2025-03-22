@@ -11,7 +11,6 @@ namespace Data.Repositories
         Task AddAsync(Comment comment);
         void Update(Comment comment);
         void Delete(Comment comment);
-        Task<bool> SaveChangesAsync();
     }
 
     public class CommentRepository : ICommentRepository
@@ -33,7 +32,6 @@ namespace Data.Repositories
             _context.Comments.Update(comment);
         public void Delete(Comment comment) =>
             _context.Comments.Remove(comment);
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
+  
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data.Repositories;
 using PetProjecAPI.Services;
@@ -13,11 +14,12 @@ namespace PetProjecAPI.Controllers
     {
         private readonly IPostRepository _postRepository;
         private readonly IFileStorageService _fileStorageService;
-
-        public PostsController(IPostRepository postRepository, IFileStorageService fileStorageService)
+        private readonly IUnitOfWork _unitOfWorkl;
+        public PostsController(IPostRepository postRepository, IFileStorageService fileStorageService, IUnitOfWork unitOfWork)
         {
             _postRepository = postRepository;
             _fileStorageService = fileStorageService;
+            _unitOfWorkl = unitOfWork;
         }
 
         [HttpGet]
@@ -64,7 +66,7 @@ namespace PetProjecAPI.Controllers
             };
 
             await _postRepository.AddAsync(post);
-            await _postRepository.SaveChangesAsync();
+            await _unitOfWorkl.SaveChangesAsync();
             return CreatedAtAction(nameof(GetPost), new { id = post.Id }, post);
         }
 
@@ -73,16 +75,9 @@ namespace PetProjecAPI.Controllers
         {
             if (id != post.Id) return BadRequest("ID mismatch.");
             _postRepository.Update(post);
-            try
-            {
-                await _postRepository.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (await _postRepository.GetByIdAsync(id) == null)
-                    return NotFound();
-                throw;
-            }
+            
+            await _unitOfWorkl.SaveChangesAsync();
+            
 
             return NoContent();
         }
@@ -99,7 +94,7 @@ namespace PetProjecAPI.Controllers
             }
 
             _postRepository.Delete(post);
-            await _postRepository.SaveChangesAsync();
+            await _unitOfWorkl.SaveChangesAsync();
             return NoContent();
         }
     }
