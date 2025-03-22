@@ -33,6 +33,7 @@ builder.Services.AddScoped<ICommentLikeRepository, CommentLikeRepository>();
 builder.Services.AddScoped<IPostLikeRepository, PostLikeRepository>();
 builder.Services.AddScoped<IUserPhotoRepository, UserPhotoRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

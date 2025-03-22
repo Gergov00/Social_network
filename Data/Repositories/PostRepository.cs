@@ -11,7 +11,6 @@ namespace Data.Repositories
         Task AddAsync(Post post);
         void Update(Post post);
         void Delete(Post post);
-        Task<bool> SaveChangesAsync();
     }
 
     public class PostRepository : IPostRepository
@@ -35,7 +34,6 @@ namespace Data.Repositories
             _context.Posts.Update(post);
         public void Delete(Post post) =>
             _context.Posts.Remove(post);
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
+        
     }
 }

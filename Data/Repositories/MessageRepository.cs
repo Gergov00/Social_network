@@ -8,7 +8,6 @@ namespace Data.Repositories
         Task AddAsync(Message message);
         Task<IEnumerable<Message>> GetConversationAsync(int userId, int friendId);
         Task<IEnumerable<dynamic>> GetChatsAsync(int userId);
-        Task<bool> SaveChangesAsync();
     }
 
     public class MessageRepository : IMessageRepository
@@ -36,7 +35,6 @@ namespace Data.Repositories
                     LastMessage = g.OrderByDescending(m => m.SentAt).FirstOrDefault()
                 })
                 .ToListAsync();
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
+    
     }
 }

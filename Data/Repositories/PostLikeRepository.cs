@@ -11,7 +11,6 @@ namespace Data.Repositories
         Task AddAsync(PostLike postLike);
         void Update(PostLike postLike);
         void Delete(PostLike postLike);
-        Task<bool> SaveChangesAsync();
     }
 
     public class PostLikeRepository : IPostLikeRepository
@@ -33,7 +32,6 @@ namespace Data.Repositories
             _context.PostLikes.Update(postLike);
         public void Delete(PostLike postLike) =>
             _context.PostLikes.Remove(postLike);
-        public async Task<bool> SaveChangesAsync() =>
-            await _context.SaveChangesAsync() > 0;
+    
     }
 }

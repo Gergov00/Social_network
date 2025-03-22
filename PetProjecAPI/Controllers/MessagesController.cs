@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data;
+using Microsoft.AspNetCore.Mvc;
 using Data.Repositories;
 using Domain.Entities;
 using PetProjecAPI.Hubs;
@@ -13,11 +14,14 @@ namespace PetProjecAPI.Controllers
     {
         private readonly IMessageRepository _messageRepository;
         private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IUnitOfWork _unitOfWorkl;
+        
 
-        public MessagesController(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext)
+        public MessagesController(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext, IUnitOfWork unitOfWorkl)
         {
             _messageRepository = messageRepository;
             _hubContext = hubContext;
+            _unitOfWorkl = unitOfWorkl;
         }
 
         [HttpPost("send")]
@@ -25,7 +29,7 @@ namespace PetProjecAPI.Controllers
         {
             message.SentAt = DateTime.UtcNow;
             await _messageRepository.AddAsync(message);
-            await _messageRepository.SaveChangesAsync();
+            await _unitOfWorkl.SaveChangesAsync();
             await _hubContext.Clients.User(message.ReceiverId.ToString())
                 .SendAsync("ReceiveMessage", message);
             return Ok(message);

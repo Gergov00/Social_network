@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data.Repositories;
 using Domain.Entities;
@@ -10,10 +11,12 @@ namespace PetProjecAPI.Controllers
 public class CommentsController : ControllerBase
 {
     private readonly ICommentRepository _commentRepository;
+    private readonly IUnitOfWork _unitOfWorkl;
 
-    public CommentsController(ICommentRepository commentRepository)
+    public CommentsController(ICommentRepository commentRepository, IUnitOfWork unitOfWorkl)
     {
         _commentRepository = commentRepository;
+        _unitOfWorkl = unitOfWorkl;
     }
 
     [HttpGet]
@@ -42,7 +45,7 @@ public class CommentsController : ControllerBase
     public async Task<ActionResult<Comment>> CreateComment([FromBody] Comment comment)
     {
         await _commentRepository.AddAsync(comment);
-        await _commentRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return CreatedAtAction(nameof(GetComment), new { id = comment.Id }, comment);
     }
 
@@ -51,16 +54,10 @@ public class CommentsController : ControllerBase
     {
         if (id != comment.Id) return BadRequest("ID mismatch.");
         _commentRepository.Update(comment);
-        try
-        {
-            await _commentRepository.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (await _commentRepository.GetByIdAsync(id) == null)
-                return NotFound();
-            throw;
-        }
+        
+            await _unitOfWorkl.SaveChangesAsync();
+        
+       
         return NoContent();
     }
 
@@ -70,7 +67,7 @@ public class CommentsController : ControllerBase
         var comment = await _commentRepository.GetByIdAsync(id);
         if (comment == null) return NotFound();
         _commentRepository.Delete(comment);
-        await _commentRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return NoContent();
     }
 }

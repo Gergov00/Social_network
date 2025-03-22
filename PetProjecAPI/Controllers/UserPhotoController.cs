@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data.Repositories;
 using Domain.Entities;
@@ -12,9 +13,11 @@ public class UserPhotosController : ControllerBase
 {
     private readonly IUserPhotoRepository _userPhotoRepository;
     private readonly IFileStorageService _fileStorageService;
+    private readonly IUnitOfWork _unitOfWorkl;
 
-    public UserPhotosController(IUserPhotoRepository userPhotoRepository, IFileStorageService fileStorageService)
+    public UserPhotosController(IUnitOfWork unitOfWorkl, IUserPhotoRepository userPhotoRepository, IFileStorageService fileStorageService)
     {
+        _unitOfWorkl = unitOfWorkl;
         _userPhotoRepository = userPhotoRepository;
         _fileStorageService = fileStorageService;
     }
@@ -49,7 +52,7 @@ public class UserPhotosController : ControllerBase
             CreatedAt = DateTime.UtcNow
         };
         await _userPhotoRepository.AddAsync(userPhoto);
-        await _userPhotoRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return Ok(userPhoto);
     }
 
@@ -58,16 +61,10 @@ public class UserPhotosController : ControllerBase
     {
         if (id != userPhoto.Id) return BadRequest("ID mismatch.");
         _userPhotoRepository.Update(userPhoto);
-        try
-        {
-            await _userPhotoRepository.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (await _userPhotoRepository.GetByIdAsync(id) == null)
-                return NotFound();
-            throw;
-        }
+        
+            await _unitOfWorkl.SaveChangesAsync();
+        
+        
         return NoContent();
     }
 
@@ -79,7 +76,7 @@ public class UserPhotosController : ControllerBase
 
         await _fileStorageService.DeleteFileByUrlAsync(userPhoto.PhotoURL, Request);
         _userPhotoRepository.Delete(userPhoto);
-        await _userPhotoRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return NoContent();
     }
 }

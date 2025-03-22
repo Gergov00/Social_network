@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data.Repositories;
 using Domain.Entities;
@@ -13,11 +14,13 @@ public class UsersController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
     private readonly IFileStorageService _fileStorageService;
+    private readonly IUnitOfWork _unitOfWorkl;
 
-    public UsersController(IUserRepository userRepository, IFileStorageService fileStorageService)
+    public UsersController(IUserRepository userRepository, IFileStorageService fileStorageService, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
         _fileStorageService = fileStorageService;
+        _unitOfWorkl = unitOfWork;
     }
 
     [HttpGet]
@@ -38,8 +41,9 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser([FromBody] User user)
     {
+        
         await _userRepository.AddAsync(user);
-        await _userRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
     }
 
@@ -89,7 +93,7 @@ public class UsersController : ControllerBase
         }
 
         _userRepository.Update(user);
-        await _userRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return Ok(user);
     }
 
@@ -98,16 +102,8 @@ public class UsersController : ControllerBase
     {
         if (id != user.Id) return BadRequest("ID mismatch.");
         _userRepository.Update(user);
-        try
-        {
-            await _userRepository.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (await _userRepository.GetByIdAsync(id) == null)
-                return NotFound();
-            throw;
-        }
+        await _unitOfWorkl.SaveChangesAsync();
+        
         return NoContent();
     }
 
@@ -117,7 +113,7 @@ public class UsersController : ControllerBase
         var user = await _userRepository.GetByIdAsync(id);
         if (user == null) return NotFound();
         _userRepository.Delete(user);
-        await _userRepository.SaveChangesAsync();
+        await _unitOfWorkl.SaveChangesAsync();
         return NoContent();
     }
 
