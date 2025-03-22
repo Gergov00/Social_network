@@ -1,4 +1,4 @@
-﻿namespace PetProjecAPI.DB
+﻿namespace Domain.Entities
 {
     public class PostLike
     {

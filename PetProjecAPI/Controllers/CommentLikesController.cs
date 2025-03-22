@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Validations;
-using PetProjecAPI.DB;
+using Data.Repositories;
+using Domain.Entities;
 
 namespace PetProjecAPI.Controllers
 {
@@ -9,40 +9,39 @@ namespace PetProjecAPI.Controllers
     [ApiController]
     public class CommentLikesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly ICommentLikeRepository _context;
 
-        public CommentLikesController(AppDbContext context)
+        public CommentLikesController(ICommentLikeRepository context)
         {
             _context = context;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CommentLike>>> GetCommentLikes()
+        public async Task<IActionResult> GetCommentLikes()
         {
-            return await _context.CommentLikes.ToListAsync();
+            var commentLikes = await _context.GetAllAsync();
+            return Ok(commentLikes);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CommentLike>> GetCommentLike(int id)
+        public async Task<IActionResult> GetCommentLike(int id)
         {
-            var commentLike = await _context.CommentLikes.FindAsync(id);
+            var commentLike = await _context.GetByIdAsync(id);
             if (commentLike == null) return NotFound();
-            return commentLike;
+            return Ok(commentLike);
         }
 
         [HttpGet("likes/{commentId}")]
-        public async Task<ActionResult<IEnumerable<CommentLike>>> GetLikeByCommentId(int commentId)
+        public async Task<IActionResult> GetLikeByCommentId(int commentId)
         {
-            var likes = await _context.CommentLikes
-                .Where(e => e.CommentId == commentId)
-                .ToListAsync();
+            var likes = await _context.GetByCommentIdAsync(commentId);
             return Ok(likes);
         }
 
         [HttpPost]
-        public async Task<ActionResult<CommentLike>> CreateCommentLike([FromBody] CommentLike commentLike)
+        public async Task<IActionResult> CreateCommentLike([FromBody] CommentLike commentLike)
         {
-            _context.CommentLikes.Add(commentLike);
+            _context.AddAsync(commentLike);
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(GetCommentLike), new { id = commentLike.Id }, commentLike);
         }
@@ -52,14 +51,15 @@ namespace PetProjecAPI.Controllers
         {
             if (id != commentLike.Id) return BadRequest("ID mismatch.");
 
-            _context.Entry(commentLike).State = EntityState.Modified;
+            _context.Update(commentLike);
             try
             {
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!CommentLikeExists(id)) return NotFound();
+                if (await _context.GetByIdAsync(id) == null)
+                    return NotFound();
                 throw;
             }
             return NoContent();
@@ -68,17 +68,12 @@ namespace PetProjecAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommentLike(int id)
         {
-            var commentLike = await _context.CommentLikes.FindAsync(id);
+            var commentLike = await _context.GetByIdAsync(id);
             if (commentLike == null) return NotFound();
 
-            _context.CommentLikes.Remove(commentLike);
+            _context.Delete(commentLike);
             await _context.SaveChangesAsync();
             return NoContent();
-        }
-
-        private bool CommentLikeExists(int id)
-        {
-            return _context.CommentLikes.Any(e => e.Id == id);
         }
     }
 }
