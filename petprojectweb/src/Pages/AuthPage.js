@@ -72,7 +72,7 @@ const AuthPage = () => {
 
     useEffect(() => {
         $('.form').on('keyup blur focus', 'input, textarea', function (e) {
-            var $this = $(this),
+            let $this = $(this),
                 label = $this.closest('.field-wrap').find('label');
 
             if (e.type === 'keyup') {
@@ -119,13 +119,13 @@ const AuthPage = () => {
                     className={`tab ${activeTab === 'signup' ? 'active' : ''}`}
                     onClick={() => handleTabClick('signup')}
                 >
-                    <a href="#signup">Sign Up</a>
+                    <a href="">Sign Up</a>
                 </li>
                 <li
                     className={`tab ${activeTab === 'login' ? 'active' : ''}`}
                     onClick={() => handleTabClick('login')}
                 >
-                    <a href="#login">Log In</a>
+                    <a href="">Log In</a>
                 </li>
             </ul>
 

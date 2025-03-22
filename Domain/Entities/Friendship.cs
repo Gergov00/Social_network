@@ -2,7 +2,7 @@
 
 using System.Text.Json.Serialization;
 
-namespace PetProjecAPI.DB
+namespace Domain.Entities
 {
     public class Friendship
     {
