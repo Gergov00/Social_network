@@ -1,4 +1,3 @@
-using PetProjecAPI.DB;
 using Microsoft.EntityFrameworkCore;
 using PetProjecAPI.Hubs;
 using Microsoft.AspNetCore.SignalR;
@@ -6,6 +5,9 @@ using PetProjecAPI.Providers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Data;
+using Data.Repositories;
+using PetProjecAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,15 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IFriendshipRepository, FriendshipRepository>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<ICommentLikeRepository, CommentLikeRepository>();
+builder.Services.AddScoped<IPostLikeRepository, PostLikeRepository>();
+builder.Services.AddScoped<IUserPhotoRepository, UserPhotoRepository>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

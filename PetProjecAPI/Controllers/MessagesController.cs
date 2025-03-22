@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
-using PetProjecAPI.DB;
+using Data.Repositories;
+using Domain.Entities;
 using PetProjecAPI.Hubs;
+using Microsoft.AspNetCore.SignalR;
+
 
 namespace PetProjecAPI.Controllers
 {
@@ -10,12 +11,12 @@ namespace PetProjecAPI.Controllers
     [ApiController]
     public class MessagesController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IMessageRepository _messageRepository;
         private readonly IHubContext<ChatHub> _hubContext;
 
-        public MessagesController(AppDbContext context, IHubContext<ChatHub> hubContext)
+        public MessagesController(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext)
         {
-            _context = context;
+            _messageRepository = messageRepository;
             _hubContext = hubContext;
         }
 
@@ -23,43 +24,26 @@ namespace PetProjecAPI.Controllers
         public async Task<IActionResult> SendMessage([FromBody] Message message)
         {
             message.SentAt = DateTime.UtcNow;
-            _context.Messages.Add(message);
-            await _context.SaveChangesAsync();
-            Console.WriteLine($"Отправка уведомления пользователю {message.ReceiverId}");
-
+            await _messageRepository.AddAsync(message);
+            await _messageRepository.SaveChangesAsync();
             await _hubContext.Clients.User(message.ReceiverId.ToString())
                 .SendAsync("ReceiveMessage", message);
-
             return Ok(message);
         }
 
         [HttpGet("conversation")]
         public async Task<IActionResult> GetConversation(int userId, int friendId)
         {
-            var messages = await _context.Messages
-                .Where(m => (m.SenderId == userId && m.ReceiverId == friendId) ||
-                            (m.SenderId == friendId && m.ReceiverId == userId))
-                .OrderBy(m => m.SentAt)
-                .ToListAsync();
+            var messages = await _messageRepository.GetConversationAsync(userId, friendId);
             return Ok(messages);
         }
 
         [HttpGet("chats")]
         public async Task<IActionResult> GetChats(int userId)
         {
-            // Выбираем все сообщения, где пользователь является либо отправителем, либо получателем.
-            var chats = await _context.Messages
-                .Where(m => m.SenderId == userId || m.ReceiverId == userId)
-                // Группируем по идентификатору собеседника (если пользователь является отправителем – собеседник = ReceiverId, иначе – SenderId)
-                .GroupBy(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
-                .Select(g => new
-                {
-                    ChatWith = g.Key,
-                    LastMessage = g.OrderByDescending(m => m.SentAt).FirstOrDefault()
-                })
-                .ToListAsync();
-
+            var chats = await _messageRepository.GetChatsAsync(userId);
             return Ok(chats);
         }
     }
+
 }
