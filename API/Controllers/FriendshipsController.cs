@@ -1,9 +1,8 @@
-﻿using API.Hubs;
-using Data;
+﻿using Data;
 using Microsoft.AspNetCore.Mvc;
 using Data.Repositories;
 using Domain.Entities;
-using Microsoft.AspNetCore.SignalR;
+using Infrastructure.SignalR;
 
 
 namespace API.Controllers
@@ -13,14 +12,14 @@ namespace API.Controllers
 public class FriendshipsController : ControllerBase
 {
     private readonly IFriendshipRepository _friendshipRepository;
-    private readonly IHubContext<NotificationsHub> _hubContext;
+    private readonly INotificationService<NotificationsHub> _notificationService;
     private readonly IUnitOfWork _unitOfWorkl;
 
-    public FriendshipsController(IUnitOfWork unitOfWork, IFriendshipRepository friendshipRepository, IHubContext<NotificationsHub> hubContext)
+    public FriendshipsController(IUnitOfWork unitOfWork, IFriendshipRepository friendshipRepository, INotificationService<NotificationsHub> notificationService)
     {
         _unitOfWorkl = unitOfWork;
         _friendshipRepository = friendshipRepository;
-        _hubContext = hubContext;
+        _notificationService = notificationService;
     }
 
     [HttpGet("{friendId}")]
@@ -57,9 +56,13 @@ public class FriendshipsController : ControllerBase
             CreatedAt = friendship.CreatedAt
         };
 
-        await _hubContext.Clients.User(friendship.FriendId.ToString())
-            .SendAsync("ReceiveNotification", notification);
+        
 
+        await _notificationService.SendNotificationToUserAsync(
+            friendship.FriendId.ToString(),
+            "ReceiveNotification",
+            notification);
+        
         return Ok(friendship);
     }
 
@@ -92,10 +95,17 @@ public class FriendshipsController : ControllerBase
             Status = "accepted"
         };
 
-        await _hubContext.Clients.User(friendship.UserId.ToString())
-            .SendAsync("ReceiveNotification", notification);
-        await _hubContext.Clients.User(friendship.FriendId.ToString())
-            .SendAsync("ReceiveNotification", notification2);
+      
+
+        await _notificationService.SendNotificationToUserAsync(
+            friendship.UserId.ToString(),
+            "ReceiveNotification",
+            notification);
+        await _notificationService.SendNotificationToUserAsync(
+            friendship.FriendId.ToString(),
+            "ReceiveNotification",
+            notification2);
+        
 
         return Ok(friendship);
     }
@@ -109,8 +119,10 @@ public class FriendshipsController : ControllerBase
         _friendshipRepository.Delete(friendship);
         await _unitOfWorkl.SaveChangesAsync();
 
-        await _hubContext.Clients.User(friendship.FriendId.ToString())
-            .SendAsync("ReceiveCancelNotification", new { Id = friendship.Id, Message = "Запрос в друзья отменен" });
+        await _notificationService.SendNotificationToUserAsync(
+            friendship.FriendId.ToString(),
+            "ReceiveCancelNotification", 
+            new { Id = friendship.Id, Message = "Запрос в друзья отменен" });
 
         return NoContent();
     }

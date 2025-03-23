@@ -1,9 +1,8 @@
-﻿using API.Hubs;
-using Data;
+﻿using Data;
 using Microsoft.AspNetCore.Mvc;
 using Data.Repositories;
 using Domain.Entities;
-using Microsoft.AspNetCore.SignalR;
+using Infrastructure.SignalR;
 
 
 namespace API.Controllers
@@ -13,14 +12,14 @@ namespace API.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly IMessageRepository _messageRepository;
-        private readonly IHubContext<ChatHub> _hubContext;
+        private readonly INotificationService<ChatHub> _notificationService;
         private readonly IUnitOfWork _unitOfWorkl;
         
 
-        public MessagesController(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext, IUnitOfWork unitOfWorkl)
+        public MessagesController(IMessageRepository messageRepository, INotificationService<ChatHub> notificationService, IUnitOfWork unitOfWorkl)
         {
             _messageRepository = messageRepository;
-            _hubContext = hubContext;
+            _notificationService = notificationService;
             _unitOfWorkl = unitOfWorkl;
         }
 
@@ -30,8 +29,10 @@ namespace API.Controllers
             message.SentAt = DateTime.UtcNow;
             await _messageRepository.AddAsync(message);
             await _unitOfWorkl.SaveChangesAsync();
-            await _hubContext.Clients.User(message.ReceiverId.ToString())
-                .SendAsync("ReceiveMessage", message);
+            await _notificationService.SendNotificationToUserAsync(
+                message.ReceiverId.ToString(),
+                "ReceiveMessage", 
+                message);
             return Ok(message);
         }
 

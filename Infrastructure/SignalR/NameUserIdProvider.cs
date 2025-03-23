@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace API.Providers
+namespace Infrastructure.SignalR
 {
     public class NameUserIdProvider : IUserIdProvider
     {

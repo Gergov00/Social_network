@@ -1,13 +1,11 @@
 using Microsoft.EntityFrameworkCore;
-using API.Hubs;
-using Microsoft.AspNetCore.SignalR;
-using API.Providers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Data;
 using Data.Repositories;
 using API.Services;
+using Infrastructure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,6 +32,8 @@ builder.Services.AddScoped<IPostLikeRepository, PostLikeRepository>();
 builder.Services.AddScoped<IUserPhotoRepository, UserPhotoRepository>();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<INotificationService<ChatHub>, NotificationService<ChatHub>>();
+builder.Services.AddScoped<INotificationService<NotificationsHub>, NotificationService<NotificationsHub>>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -76,9 +76,7 @@ builder.Services.AddAuthentication(options =>
 
 
 
-builder.Services.AddSignalR();
-
-builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
+builder.Services.AddSignalRInfrastructure();
 
 var app = builder.Build();
 
