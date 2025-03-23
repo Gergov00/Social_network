@@ -1,4 +1,4 @@
-﻿namespace PetProjecAPI.DTOs
+﻿namespace API.DTOs
 {
     public class LoginModel
     {

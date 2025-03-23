@@ -4,12 +4,12 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Security.Claims;
+using API.DTOs;
 using Data;
 using Microsoft.AspNetCore.Identity;
-using PetProjecAPI.DTOs;
 using Data.Repositories;
 
-namespace PetProjecAPI.Controllers
+namespace API.Controllers
 {
     [Route("api/[controller]")]
 [ApiController]

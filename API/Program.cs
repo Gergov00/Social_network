@@ -1,13 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using PetProjecAPI.Hubs;
+using API.Hubs;
 using Microsoft.AspNetCore.SignalR;
-using PetProjecAPI.Providers;
+using API.Providers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Data;
 using Data.Repositories;
-using PetProjecAPI.Services;
+using API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

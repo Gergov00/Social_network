@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace PetProjecAPI.Hubs
+namespace API.Hubs
 {
     public class ChatHub: Hub
     {

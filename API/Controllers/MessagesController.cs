@@ -1,12 +1,12 @@
-﻿using Data;
+﻿using API.Hubs;
+using Data;
 using Microsoft.AspNetCore.Mvc;
 using Data.Repositories;
 using Domain.Entities;
-using PetProjecAPI.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
 
-namespace PetProjecAPI.Controllers
+namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 
-namespace PetProjecAPI.Providers
+namespace API.Providers
 {
     public class NameUserIdProvider : IUserIdProvider
     {

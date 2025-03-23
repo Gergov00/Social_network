@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Data.Repositories;
 using Domain.Entities;
 
-namespace PetProjecAPI.Controllers
+namespace API.Controllers
 {
     [Route("api/[controller]")]
 [ApiController]

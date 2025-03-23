@@ -1,4 +1,4 @@
-﻿namespace PetProjecAPI.Services
+﻿namespace API.Services
 {
     using System;
     using System.IO;

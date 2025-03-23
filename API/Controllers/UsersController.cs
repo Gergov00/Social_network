@@ -1,12 +1,12 @@
-﻿using Data;
+﻿using API.DTOs;
+using API.Services;
+using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Data.Repositories;
 using Domain.Entities;
-using PetProjecAPI.Services;
-using PetProjecAPI.DTOs;
 
-namespace PetProjecAPI.Controllers
+namespace API.Controllers
 {
     [Route("api/[controller]")]
 [ApiController]
