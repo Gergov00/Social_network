@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Data;
 using Data.Repositories;
-using API.Services;
+using Infrastructure.Services;
 using Infrastructure.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);

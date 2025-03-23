@@ -1,10 +1,10 @@
-﻿namespace API.Services
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
+
+
+namespace Infrastructure.Services
 {
-    using System;
-    using System.IO;
-    using System.Threading.Tasks;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
+    
 
     public interface IFileStorageService
     {

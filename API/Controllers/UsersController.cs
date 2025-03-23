@@ -1,8 +1,7 @@
 ﻿using API.DTOs;
-using API.Services;
+using Infrastructure.Services;
 using Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Data.Repositories;
 using Domain.Entities;
 
