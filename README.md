@@ -120,9 +120,6 @@ This project is fully open-source! Feel free to:
 - Open pull requests to improve backend logic or add tests.  
 - Suggest frontend enhancements or share ideas.
 
-## 📝 License
-
-Licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## 📫 Contact
 
